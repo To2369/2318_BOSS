@@ -27,12 +27,11 @@ void PlayerManager::Update(float elapsedTime)
     //CollisionEnemyVsEnemies();
 }
 
-void PlayerManager::Render(ID3D11DeviceContext* dc, Shader* shader)
+void PlayerManager::Render(RenderContext& rc,ModelShader* shader)
 {
     for (player* pl : players)
     {
-        pl->Render(dc, shader);
-
+        pl->Render(rc, shader);
     }
 }
 

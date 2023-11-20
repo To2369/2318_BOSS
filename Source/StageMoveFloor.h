@@ -9,7 +9,7 @@ public:
     ~StageMoveFloor();
 
     void Update(float elapsedTime)override;
-    void Render(ID3D11DeviceContext* device, Shader* shader)override;
+    void Render(RenderContext& rc, ModelShader* shader)override;
     bool RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& Hit)override;
 
     void SetStartPoint(const DirectX::XMFLOAT3 start) { this->start = start; };

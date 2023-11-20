@@ -16,9 +16,9 @@ void StageMain::Update(float elapsedTime)
 {
 
 }
-void StageMain::Render(ID3D11DeviceContext* dc, Shader* shader)
+void StageMain::Render(RenderContext& rc, ModelShader* shader)
 {
-    shader->Draw(dc,model);
+    shader->Draw(rc,model);
 }
 
 bool StageMain::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& Hit)

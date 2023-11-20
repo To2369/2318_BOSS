@@ -20,7 +20,7 @@ public:
     //更新処理
     void Update(float elpsedTime);
     //描画処理
-    void Render(ID3D11DeviceContext* dc, Shader* shader);
+    void Render(RenderContext& rc, ModelShader* shader);
     //エネミーの登録
     void Register(Enemy* enemy);
     void Clear();

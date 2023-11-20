@@ -46,9 +46,9 @@ void ProjectileStraight::Update(float elapsedTime)
 
 }
 
-void ProjectileStraight::Render(ID3D11DeviceContext* dc, Shader* shader)
+void ProjectileStraight::Render(RenderContext& rc, ModelShader* shader)
 {
-    shader->Draw(dc, model);
+    shader->Draw(rc, model);
 }
 
 //”­ŽË

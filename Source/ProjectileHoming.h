@@ -12,7 +12,7 @@ public:
     //XVˆ—
     void Update(float elapsedTime)override;
     //•`‰æˆ—@
-    void Render(ID3D11DeviceContext* dc, Shader* shader)override;
+    void Render(RenderContext&rc, ModelShader* shader)override;
     //”­Ë
     void Launch(const DirectX::XMFLOAT3& Direction,
         const DirectX::XMFLOAT3& position,

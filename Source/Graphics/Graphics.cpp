@@ -128,9 +128,14 @@ Graphics::Graphics(HWND hWnd)
 		immediateContext->RSSetViewports(1, &viewport);
 	}
 
-	// シェーダー
+	// モデルシェーダー
 	{
-		shader = std::make_unique<LambertShader>(device.Get());
+		modelShaders[static_cast<int>(ModelShaderId::Default)] = std::make_unique<LambertShader>(device.Get());
+	}
+
+	// スプライトシェーダー
+	{
+		//spriteShaders[static_cast<int>(SpriteShaderId::Default)] = std::make_unique<>(device.Get());
 	}
 
 	// レンダラ

@@ -134,6 +134,7 @@ void SceneGame::Render()
 
 	// 描画処理
 	RenderContext rc;
+	rc.deviceContext = dc;
 	rc.lightDirection = { 0.0f, -1.0f, 0.0f, 0.0f };	// ライト方向（下方向）
 	
 	//カメラパラメータ設定
@@ -146,13 +147,13 @@ void SceneGame::Render()
 
 	// 3Dモデル描画
 	{
-		Shader* shader = graphics.GetShader();
-		shader->Begin(dc, rc);
+		ModelShader* shader = graphics.GetShader(ModelShaderId::Default);
+		shader->Begin(rc);
 		//ステージ描画
-		StageManager::Instance().Render(dc, shader);
-		PlayerManager::Instance().Render(dc, shader);
-		EnemyManager::Instance().Render(dc, shader);
-		shader->End(dc);
+		StageManager::Instance().Render(rc, shader);
+		PlayerManager::Instance().Render(rc, shader);
+		EnemyManager::Instance().Render(rc, shader);
+		shader->End(rc);
 	}
 
 	
