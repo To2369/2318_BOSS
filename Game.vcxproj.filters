@@ -201,6 +201,12 @@
     <ClInclude Include="Source\PlayerManager.h">
       <Filter>Source\Manager関連\ヘッダー</Filter>
     </ClInclude>
+    <ClInclude Include="Source\Graphics\MaskShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\DefaultSpriteShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\imgui\imgui.cpp">
@@ -343,6 +349,12 @@
     </ClCompile>
     <ClCompile Include="Source\PlayerManager.cpp">
       <Filter>Source\Manager関連\ソース</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\MaskShader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\DefaultSpriteShader.cpp">
+      <Filter>Source\Graphics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -3,6 +3,7 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "Graphics/RenderContext.h"
+#include "Graphics/Sprite.h"
 #include "Graphics/Model.h"
 
 class ModelShader
@@ -31,7 +32,7 @@ public:
 	virtual void Begin(const RenderContext& rc) = 0;
 
 	// ï`âÊ
-	virtual void Draw(const RenderContext& rc, const Model* model) = 0;
+	virtual void Draw(const RenderContext& rc, const Sprite* model) = 0;
 
 	// ï`âÊèIóπ
 	virtual void End(const RenderContext& rc) = 0;

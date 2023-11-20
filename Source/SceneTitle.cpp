@@ -29,6 +29,17 @@ void ScnenTitle::Update(float elpsedTime)
     {
         SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
     }
+
+    float screenWidh = static_cast<float>(Graphics::Instance().GetScreenWidth());
+    float screenHeight = static_cast <float>(Graphics::Instance().GetScreenHeight());
+    float textureWidth = static_cast<float>(sprite->GetTextureWidth());
+    float textureHeght = static_cast<float>(sprite->GetTextureHeight());
+
+    sprite->Update(
+        0, 0, screenWidh, screenHeight,
+        0, 0, textureWidth, screenHeight,
+        0,
+        1, 1, 1, 1);
 }
 
 void ScnenTitle::Render()
@@ -43,18 +54,17 @@ void ScnenTitle::Render()
     dc->ClearRenderTargetView(rtv, color);
     dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     dc->OMSetRenderTargets(1, &rtv, dsv);
+
+    RenderContext rc;
+    rc.deviceContext = dc;
+
     //２Dスプライト
     {
-        float screenWidh = static_cast<float>(graphics.GetScreenWidth());
-        float screenHeight = static_cast <float>(graphics.GetScreenHeight());
-        float textureWidth = static_cast<float>(sprite->GetTextureWidth());
-        float textureHeght = static_cast<float>(sprite->GetTextureHeight());
+        SpriteShader* shader = graphics.GetShader(SpriteShaderId::Default);
         //タイトルスプライト描画
-        sprite->Render(dc,
-            0, 0, screenWidh, screenHeight,
-            0, 0, textureWidth, screenHeight,
-            0,
-            1, 1, 1, 1);
+        shader->Begin(rc);
+        shader->Draw(rc, sprite);
+        shader->End(rc);
     }
 
 

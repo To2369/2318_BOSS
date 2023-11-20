@@ -19,6 +19,7 @@ enum class ModelShaderId
 enum class SpriteShaderId
 {
 	Default,
+	Mask,
 
 	Max
 };
