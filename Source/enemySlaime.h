@@ -80,7 +80,7 @@ private:
         Anim_Die
 
     };
-    Model* model = nullptr;
+    //Model* model = nullptr;
 private:
     
     State state = State::Wander;

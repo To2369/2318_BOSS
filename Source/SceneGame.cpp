@@ -211,9 +211,9 @@ void SceneGame::DrawDebugGui()
 	if (ImGui::Begin("SceneGame", nullptr, ImGuiWindowFlags_None))
 	{
 		ImGui::InputFloat("FrameRate", &frameRateCheck);
-		ImGui::SliderFloat2("center", &Spritecenter.x, 0.f, 1200.0f);
+		
 		ImGui::SliderFloat("scale", &scale, 0.f, 1.0f);
-		ImGui::SliderFloat2("angle", &angg, 0.f, 1000.0f);
+		//ImGui::SliderFloat2("angle", &angg, 0.f, 1000.0f);
 	}
 	ImGui::End();
 

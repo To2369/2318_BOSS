@@ -581,7 +581,7 @@ void player::InputProjectile()
     if (GetPerspectiveChangeFlag().FPS)
     {
         RandomParam(Rand(circleRadius), ArrowDirection, circleRadius, RandamParam_name);
-
+        SetRandomPos(ArrowDirection);
         //‘O•ûŒü
         dir.x = Camera::instance().GetFront().x + ArrowDirection.x;
         dir.y = Camera::instance().GetFront().y + ArrowDirection.y;

@@ -121,14 +121,11 @@ void PlayerManager::DrawDebugGUI()
 
                     ImGui::SliderFloat("hanteiPos", &ajust, 0.0f, 5.0f);
 
-                    for (int i = 0; i < pl->GetProjectileM().GetProjectileCount(); i++)
-                    {
-                        float ajustcheck = pl->GetProjectileM().GetProgectile(i)->GetAdjustPos();
-                        ImGui::InputFloat("hanteiPos", &ajustcheck);
-                        //pl->GetProjectileM().GetProgectile(i)->SetAdjustPos(ajust);
-                        DirectX::XMFLOAT3 prpos{ pl->GetProjectileM().GetProgectile(i)->GetPosition() };
-                        ImGui::InputFloat3("hanteiPos", &prpos.x);
-                    }
+                    static float pr_Speed = 0;
+                    ImGui::SliderFloat("tama_Speed",&pr_Speed,0.0f,5.0f);
+                    pl->SetProjectileSpeed(pr_Speed);
+                     
+                    
 
                 }
                 if (ImGui::CollapsingHeader("MaterialNum", ImGuiTreeNodeFlags_DefaultOpen))
@@ -146,29 +143,21 @@ void PlayerManager::DrawDebugGUI()
                         pl->DebugMaterialClear(clearflag);
                     }
                 }
-                if (ImGui::CollapsingHeader("Arrow_Param", ImGuiTreeNodeFlags_DefaultOpen))
-                {
-                    static DirectX::XMFLOAT3 ang{};
-                    ImGui::SliderFloat3("ArrowAngle", &ang.x, 0.0f, 10.0f);
-                    pl->SetDirection_P(ang);
-
-                }
+             
                 if (ImGui::CollapsingHeader("CircleParam", ImGuiTreeNodeFlags_DefaultOpen))
                 {
                     float radius = pl->GetCircleRadius();
                     int randP = pl->GetRand();
                     static float sp_radius = 0.01f;
-
+                    DirectX::XMFLOAT2 Rp = pl->GetRandomPos();
                     ImGui::InputFloat("CircleRadius", &radius);
                     ImGui::InputFloat("SpeedRadius", &sp_radius);
                     pl->SetRadiusSpeed(sp_radius);
                     ImGui::Text("GetNowRandam_name:%s", pl->GetNowRandam_name().c_str());
                     ImGui::InputInt("Random_atai", &randP);
+                    ImGui::InputFloat2("Random_Pos", &Rp.x);
                 }
-                /* ImGui::InputFloat("furiction", &furic);
-                 ImGui::InputFloat("acceleration", &accele);
-
-                 ImGui::InputInt("jumpcount", &jumpCount);*/
+               
             }
         }
 

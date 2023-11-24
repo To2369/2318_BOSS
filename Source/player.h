@@ -76,7 +76,10 @@ public://Set関数
     void SetMaterialNum(int material_) { ma.push_back(material_); }
     void SetDirection_P(DirectX::XMFLOAT3 dir) { dirc = dir; }
     void SetRadiusSpeed(float sp) { radiusSpeed = sp; }
+    void SetRandomPos(DirectX::XMFLOAT2 pos) { randomPos = pos; }
+    void SetProjectileSpeed(float speed) { projectileSpeed = speed; }
 public: //Get関数
+    DirectX::XMFLOAT2 GetRandomPos() { return randomPos; }
     //今現在どのランダム配列を使用してるか
     std::string GetNowRandam_name() { return RandamParam_name; }
     float GetCircleRadius() { return circleRadius; }
@@ -115,6 +118,7 @@ public: //Get関数
     //弾の向き設定Debug用
     DirectX::XMFLOAT3 GetDirection_P() { return dirc; }
     float GetProjectileSpeed() { return projectileSpeed; }
+    
 public:
     void DebugMaterialClear(bool& flag) {
 
@@ -562,4 +566,5 @@ private:
     float radiusSpeed;
     DirectX::XMFLOAT3 dirc;
     float projectileSpeed = 0;///弾のスピード
+    DirectX::XMFLOAT2 randomPos;
 };
