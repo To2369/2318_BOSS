@@ -1,16 +1,18 @@
 #pragma once
 
 #include"CameraController.h"
+#include"camera.h"
 #include"scnen.h"
 #include"Graphics/Sprite.h"
 #include"player.h"
 #include"stageMain.h"
+#include"StageManager.h"
 // ゲームシーン
-class SceneGame:public Scene
+class SceneGame :public Scene
 {
 public:
 	SceneGame() {}
-	~SceneGame() override{}
+	~SceneGame() override {}
 
 	// 初期化
 	void Initialize()override;
@@ -23,8 +25,9 @@ public:
 
 	// 描画処理
 	void Render()override;
+	void DrawDebugGui();
 public:
-	void changeCamera(DirectX::XMFLOAT3& target,bool Switch);
+	void changeCamera(DirectX::XMFLOAT3& target, bool Switch);
 
 
 private:
@@ -39,6 +42,10 @@ private:
 	Sprite* gauge = nullptr;
 	player* player_ = nullptr;
 
+private://追加しもの
+	Graphics& graphics = Graphics::Instance();
+	Camera& camera = Camera::instance();
 	CameraController* cameraController_ = nullptr;
-	
+	std::unique_ptr<Sprite>circle = std::make_unique<Sprite>("Data/Sprite/サークル.png");
+	StageManager& stagemanager = StageManager::Instance();
 };

@@ -11,25 +11,25 @@
 #include"StageManager.h"
 #include"StageMoveFloor.h"
 #include"PlayerManager.h"
+#include"parameter.h"
 // 初期化
+using namespace Debugparam;
+static DirectX::XMFLOAT2 Spritecenter{};
+static float scale = 1;
+static float angg = {};
 void SceneGame::Initialize()
 {
 	//ステージ初期化
-	StageManager& stagemanager = StageManager::Instance();
 
-    
+
+
 	player* pl = new player;
 	pl->Set_TPPorFPS_Flag(true);
 	pl->SetPosition({});
 	PlayerManager::Instance().Register(pl);
 
-    stageMain = new StageMain();
+	stageMain = new StageMain();
 	stagemanager.Register(stageMain);
-	StageMoveFloor* stageMoveFloor = new StageMoveFloor();
-	stageMoveFloor->SetStartPoint(DirectX::XMFLOAT3(0, 1, 3));
-	stageMoveFloor->SetGoalPoint(DirectX::XMFLOAT3(10, 2, 3));
-	stageMoveFloor->SetTorque(DirectX::XMFLOAT3(0, 1.0f, 0));
-	stagemanager.Register(stageMoveFloor);
 	cameraController_ = new CameraController;
 	EnemyManager& enemyManager = EnemyManager::Instance();
 	for (int i = 0; i < 1; ++i)
@@ -42,14 +42,13 @@ void SceneGame::Initialize()
 
 	}
 	//todo:カメラ初期設定
-	Graphics& graphics = Graphics::Instance();
-	Camera& camera = Camera::instance();
+
 	camera.SetLookAt(
-		DirectX::XMFLOAT3(0, 10, -10),
+		DirectX::XMFLOAT3(0, 0, -10),
 		DirectX::XMFLOAT3(0, 0, 0),
 		DirectX::XMFLOAT3(0, 1, 0));
 	camera.SetPerspectiveFov(
-		DirectX::XMConvertToRadians(45),
+		DirectX::XMConvertToRadians(90),
 		graphics.GetScreenWidth() / graphics.GetScreenHeight(),
 		0.1f,
 		1000.0f);
@@ -62,7 +61,7 @@ void SceneGame::Initialize()
 void SceneGame::Finalize()
 {
 
-	
+
 	if (cameraController_ != nullptr)
 	{
 		delete cameraController_;
@@ -77,28 +76,23 @@ void SceneGame::Finalize()
 	StageManager::Instance().Clear();
 	PlayerManager::Instance().clear();
 }
-void SceneGame::changeCamera(DirectX::XMFLOAT3 &target,bool Switch)
+void SceneGame::changeCamera(DirectX::XMFLOAT3& target, bool Switch)
 {
-	PlayerManager& pl = PlayerManager::Instance();
+	PlayerManager& pl_m = PlayerManager::Instance();
+	player* pl = pl_m.GetPlayer(0);
 	DirectX::XMFLOAT3 p{};
-	if (pl.GetPlayer(0)->GetPerspectiveChangeFlag().TPS)
+	if (pl_m.GetPlayer(0)->GetPerspectiveChangeFlag().TPS)
 	{
-		p = pl.GetPlayer(0)->GetPosition();
+		p = pl->GetPosition();
 		p.y += 1.5f;
-		p.z += -12.f;
-	    DirectX::XMVECTOR P=DirectX::XMVectorLerp(DirectX::XMLoadFloat3(&target), DirectX::XMLoadFloat3(&p), 0.5f);
-		
+		DirectX::XMVECTOR P = DirectX::XMVectorLerp(DirectX::XMLoadFloat3(&target), DirectX::XMLoadFloat3(&p), 0.5f);
 		DirectX::XMStoreFloat3(&target, P);
 	}
-	else if (pl.GetPlayer(0)->GetPerspectiveChangeFlag().FPS)
+	else if (pl->GetPerspectiveChangeFlag().FPS)
 	{
-		//Model::Node*node=player_->GetModel()->FindNode()
-		p = pl.GetPlayer(0)->GetPosition();
-		p.x += 1.f;
-		p.y += 0.5f;
-		p.z += -4.f;
+		p = pl->GetPosition();
+		p.y += 1.0f;
 		DirectX::XMVECTOR P = DirectX::XMVectorLerp(DirectX::XMLoadFloat3(&target), DirectX::XMLoadFloat3(&p), 0.5f);
-
 		DirectX::XMStoreFloat3(&target, P);
 	}
 
@@ -106,13 +100,15 @@ void SceneGame::changeCamera(DirectX::XMFLOAT3 &target,bool Switch)
 // 更新処理
 void SceneGame::Update(float elapsedTime)
 {
+
 	static DirectX::XMFLOAT3 target{};
-	
+	frameRateCheck = elapsedTime;
+	changeCamera(target, PlayerManager::Instance().GetPlayer(0)->GetPerspectiveChangeFlag().TPS);
 	cameraController_->SetTarget(target);
 	cameraController_->Update(elapsedTime);
-	changeCamera(target, PlayerManager::Instance().GetPlayer(0)->GetPerspectiveChangeFlag().TPS);
+
 	StageManager::Instance().Update(elapsedTime);
-	PlayerManager::Instance().Update(elapsedTime);
+	PlayerManager::Instance().Update(elapsedTime, *cameraController_);
 	EnemyManager::Instance().Update(elapsedTime);
 	EffectManager::Instance().Update(elapsedTime);
 
@@ -125,7 +121,7 @@ void SceneGame::Render()
 	ID3D11DeviceContext* dc = graphics.GetDeviceContext();
 	ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
 	ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
-
+	player* pl = PlayerManager::Instance().GetPlayer(0);
 	// 画面クリア＆レンダーターゲット設定
 	FLOAT color[] = { 0.0f, 0.0f, 0.5f, 1.0f };	// RGBA(0.0～1.0)
 	dc->ClearRenderTargetView(rtv, color);
@@ -135,7 +131,7 @@ void SceneGame::Render()
 	// 描画処理
 	RenderContext rc;
 	rc.lightDirection = { 0.0f, -1.0f, 0.0f, 0.0f };	// ライト方向（下方向）
-	
+
 	//カメラパラメータ設定
 	Camera& camera = Camera::instance();
 	rc.view = camera.GetView();
@@ -155,12 +151,12 @@ void SceneGame::Render()
 		shader->End(dc);
 	}
 
-	
+
 
 	// 3Dデバッグ描画
 	{
 		//プレイヤーデバッグ表示
-		//PlayerManager::Instance().DarwDebugPrimitive();
+		PlayerManager::Instance().DarwDebugPrimitive();
 		EnemyManager::Instance().DrawDebugprimitive();
 		// ラインレンダラ描画実行
 		graphics.GetLineRenderer()->Render(dc, rc.view, rc.projection);
@@ -174,15 +170,53 @@ void SceneGame::Render()
 	}
 	// 2Dスプライト描画
 	{
-		RenderEnemyGauge(dc, rc.view, rc.projection);
+		float screenWidh = 720;//static_cast<float>(graphics.GetScreenWidth());
+		float screenHeight = static_cast <float>(graphics.GetScreenHeight());
+		float textureWidth = static_cast<float>(circle->GetTextureWidth());
+		float textureHeght = static_cast<float>(circle->GetTextureHeight());
+		if (pl->GetPerspectiveChangeFlag().FPS)
+		{
+
+			DirectX::XMFLOAT2 Pos{ 640,360 };
+			circle->Render(dc,
+				Pos,
+				screenWidh * pl->GetCircleRadius(),
+				screenHeight * pl->GetCircleRadius(),
+				0, 0,
+				textureWidth, textureHeght, 0,
+				1, 1, 1, 1);
+		}
+		//RenderEnemyGauge(textureHeghtdc, rc.view, rc.projection);
 	}
 
 	// 2DデバッグGUI描画
 	{
+		stagemanager.GUI();
 		PlayerManager::Instance().DrawDebugGUI();
-		cameraController_->DrawDebugGUI();
-		EnemyManager::Instance().DrawDebugGUI();
+		//cameraController_->DrawDebugGUI();
+		//EnemyManager::Instance().DrawDebugGUI();
+		//DrawDebugGui();
 	}
+}
+
+void SceneGame::DrawDebugGui()
+{
+
+	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+
+	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+
+	if (ImGui::Begin("SceneGame", nullptr, ImGuiWindowFlags_None))
+	{
+		ImGui::InputFloat("FrameRate", &frameRateCheck);
+		ImGui::SliderFloat2("center", &Spritecenter.x, 0.f, 1200.0f);
+		ImGui::SliderFloat("scale", &scale, 0.f, 1.0f);
+		ImGui::SliderFloat2("angle", &angg, 0.f, 1000.0f);
+	}
+	ImGui::End();
+
 }
 
 void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
@@ -231,7 +265,7 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT
 
 		//ゲージ描画
 		gauge->Render(dc,
-			screenPosition.x - gaugeWidth * 0.5f, 
+			screenPosition.x - gaugeWidth * 0.5f,
 			screenPosition.y - gaugeHeight,
 			gaugeWidth * healthRate,
 			gaugeHeight,
@@ -254,16 +288,16 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT
 		ScreenPosition = DirectX::XMLoadFloat3(&screenPosition);
 
 		WorldPosition = DirectX::XMVector3Unproject(
-		ScreenPosition,
-	    viewport.TopLeftX,
-		viewport.TopLeftY,
-		viewport.Width,
-		viewport.Height,
-		viewport.MinDepth,
-		viewport.MaxDepth,
-	    Projection,
-		View,
-		World
+			ScreenPosition,
+			viewport.TopLeftX,
+			viewport.TopLeftY,
+			viewport.Width,
+			viewport.Height,
+			viewport.MinDepth,
+			viewport.MaxDepth,
+			Projection,
+			View,
+			World
 		);
 		DirectX::XMFLOAT3 rayStart;
 		DirectX::XMStoreFloat3(&rayStart, WorldPosition);
@@ -272,22 +306,22 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT
 		ScreenPosition = DirectX::XMLoadFloat3(&screenPosition);
 
 		WorldPosition = DirectX::XMVector3Unproject(
-		ScreenPosition,
-		viewport.TopLeftX,
-		viewport.TopLeftY,
-		viewport.Width,
-		viewport.Height,
-		viewport.MinDepth,
-		viewport.MaxDepth,
-		Projection,
-		View,
-		World
-			);
+			ScreenPosition,
+			viewport.TopLeftX,
+			viewport.TopLeftY,
+			viewport.Width,
+			viewport.Height,
+			viewport.MinDepth,
+			viewport.MaxDepth,
+			Projection,
+			View,
+			World
+		);
 		DirectX::XMFLOAT3 Layend;
 		DirectX::XMStoreFloat3(&Layend, WorldPosition);
 		//レイキャスト
 		HitResult hit;
-		
+
 		if (stageMain->RayCast(rayStart, Layend, hit))
 		{
 			//////敵を配置
@@ -299,8 +333,8 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT
 			int count = enemy.GetEnemyCount();
 			for (int i = 0; i < count; i++)
 			{
-				
-			     enemy.GetEnemy(i)->Destroy();
+
+				 enemy.GetEnemy(i)->Destroy();
 			}*/
 		}
 	}

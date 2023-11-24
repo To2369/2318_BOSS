@@ -144,6 +144,7 @@
     <ClInclude Include="Source\Logger.h" />
     <ClInclude Include="Source\mathf.h" />
     <ClInclude Include="Source\Misc.h" />
+    <ClInclude Include="Source\parameter.h" />
     <ClInclude Include="Source\player.h" />
     <ClInclude Include="Source\PlayerManager.h" />
     <ClInclude Include="Source\projectile.h" />

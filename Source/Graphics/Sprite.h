@@ -18,7 +18,13 @@ public:
 		DirectX::XMFLOAT4	color;
 		DirectX::XMFLOAT2	texcoord;
 	};
-
+	void Render(ID3D11DeviceContext* immediate_context,
+		DirectX::XMFLOAT2 Pos,
+		float weight, float height,
+		float sx, float sy,
+		float sh, float sw,
+		float angle,
+		float R, float G, float B, float A);
 	// ï`âÊé¿çs
 	void Render(ID3D11DeviceContext *dc,
 		float dx, float dy,

@@ -11,11 +11,11 @@ public:
     //半径取得
     float getRadius()const { return radius; };
     //地面に着地しているか
-    bool IsGrounf()const {  return isGround; }
+    bool IsGrounf()const { return isGround; }
     //高さ取得
     float GetHeight()const { return height; }
     //ダメージを与える
-    bool ApplyDamage(int damage,float invincibleTime);
+    bool ApplyDamage(int damage, float invincibleTime);
     //衝撃を与える
     void AddImpulse(const DirectX::XMFLOAT3& impulse);
     //健康状態取得
@@ -33,19 +33,19 @@ private:
     //水平移動更新処理
     void UpdateHorizontalMove(float elpsedTime);
 
-    
+
 protected:
     float stateTime = 0.0f;
     int healt = 5;
     float height = 2.0f;
-    float radius= 0.5f;
+    float radius = 0.5f;
     float gravity = -1.0f;
     float invincibleTime_ = 2.0f;
     float friction = 0.5f;
     float acceleration = 1.0f;
     float maxMoveSpeed = 5.0f;
-    float moveVecX =0.0f;
-    float moveVecZ=0.0f;
+    float moveVecX = 0.0f;
+    float moveVecZ = 0.0f;
     float airControl = 0.3f;
     float step0ffeset = 1.0f;
     float slopeRate = 0.0f;
@@ -54,8 +54,8 @@ protected:
     Model* model = nullptr;
     DirectX::XMFLOAT3   velocity = { 0,0,0 };
     DirectX::XMFLOAT3   position = { 0,0,0 };
-    DirectX::XMFLOAT3   angle    = { 0,0,0 };
-    DirectX::XMFLOAT3   scale    = { 1,1,1 };
+    DirectX::XMFLOAT3   angle = { 0,0,0 };
+    DirectX::XMFLOAT3   scale = { 1,1,1 };
     DirectX::XMFLOAT4X4 transform =
     {
         1,0,0,0,//右方向
@@ -71,7 +71,7 @@ protected:
     virtual void OnDead() {};
 protected:
     //移動処理
-      void Move( float vx, float vz, float speed);
+    void Move(float vx, float vz, float speed);
     //void Move(float elapsedTime,float vx, float vz, float speed);
     //旋回処理
     void Trun(float elapsedTime, float vx, float vz, float speed);

@@ -10,7 +10,11 @@ Projectile::Projectile(ProjectileManager* manager)
 void Projectile::DrawdebugPrimitive()
 {
     DebugRenderer* debugRenderer = Graphics::Instance().GetDebugRenderer();
-    debugRenderer->DrawSphere(position, radius, { 1,1,1,1 });
+    Model::Node* node = model->FindNode("Body");
+    DirectX::XMFLOAT3 pos = { node->worldTransform._41,node->worldTransform._42,node->worldTransform._43 };
+
+
+    debugRenderer->DrawSphere(pos, radius, { 1,0,0,1 });
 }
 
 void Projectile::Destroy()

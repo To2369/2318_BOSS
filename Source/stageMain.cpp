@@ -3,8 +3,7 @@
 StageMain::StageMain()
 {
     //ステージモデル読み込み
-    model = new Model("Data/Model/ExampleStage/ExampleStage.mdl");
-    
+    model = new Model("Data/Model/ExampleStage/Stage.mdl");
 }
 StageMain::~StageMain()
 {
@@ -15,13 +14,15 @@ StageMain::~StageMain()
 void StageMain::Update(float elapsedTime)
 {
 
+    UpdateTransform();
+    model->UpdateTransform(transform);
 }
 void StageMain::Render(ID3D11DeviceContext* dc, Shader* shader)
 {
-    shader->Draw(dc,model);
+    shader->Draw(dc, model);
 }
 
 bool StageMain::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& Hit)
 {
-    return Collision::InstersectRayVsModel(start,end,model,Hit);
+    return Collision::InstersectRayVsModel(start, end, model, Hit);
 }

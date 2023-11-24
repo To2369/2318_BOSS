@@ -3,6 +3,7 @@
 #include"mathf.h"
 #include "player.h"
 #include"collision.h"
+#include"PlayerManager.h"
 //コンストラクタ
 EnemySlime::EnemySlime()
 {
@@ -109,18 +110,19 @@ void EnemySlime::CollisionNodeVsPlayer(const char* nodename, float boneRadius)
         );
         Graphics::Instance().GetDebugRenderer()->DrawSphere(nodePosition, boneRadius, DirectX::XMFLOAT4(0, 0, 1, 1));
 
-        player& player = player::instance();
+        PlayerManager& pl_m = PlayerManager::Instance();
+        player* player = pl_m.GetPlayer(0);
         DirectX::XMFLOAT3 outPosition;
         if (Collision::IntersectSphereVsCylinder(
             nodePosition,
             boneRadius,
-            player.GetPosition(),
-            player.getRadius(),
-            player.GetHeight(),
+            player->GetPosition(),
+            player->getRadius(),
+            player->GetHeight(),
             outPosition
         ))
         {
-            if (player.ApplyDamage(1, 0.5f))
+            if (player->ApplyDamage(1, 0.5f))
             {
                 DirectX::XMFLOAT3 vec;
                 vec.x = outPosition.x - nodePosition.x;
@@ -132,7 +134,7 @@ void EnemySlime::CollisionNodeVsPlayer(const char* nodename, float boneRadius)
                 vec.x *= power;
                 vec.z *= power;
                 vec.y = 5;
-                player.AddImpulse(vec);
+                player->AddImpulse(vec);
 
             }
 
@@ -143,7 +145,7 @@ void EnemySlime::CollisionNodeVsPlayer(const char* nodename, float boneRadius)
 bool EnemySlime::serchPlayer()
 {
 
-    const DirectX::XMFLOAT3& playerPosition = player::instance().GetPosition();
+    const DirectX::XMFLOAT3& playerPosition = PlayerManager::Instance().GetPlayer(0)->GetPosition();
     float vx = playerPosition.x - position.x;
     float vy = playerPosition.y - position.y;
     float vz = playerPosition.z - position.z;
@@ -176,7 +178,7 @@ void EnemySlime::TransitionIdleBattleState()
 
 void EnemySlime::UpdateIdleBattleState(float elapsedTime)
 {
-    targetPositoin = player::instance().GetPosition();
+    targetPositoin = PlayerManager::Instance().GetPlayer(0)->GetPosition();
     stateTime -= elapsedTime;
     if (stateTime < 0.0f)
     {
@@ -249,7 +251,7 @@ void EnemySlime::TransitionPursuitState()
 
 void EnemySlime::UpdatePursuitState(float elapsedTime)
 {
-    targetPositoin = player::instance().GetPosition();
+    targetPositoin = PlayerManager::Instance().GetPlayer(0)->GetPosition();
     MOveToTarget(elapsedTime, 1.0f);
     stateTime -= elapsedTime;
     if (stateTime < 0.0f)

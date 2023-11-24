@@ -239,6 +239,27 @@ Sprite::Sprite(const char* filename)
 	}
 }
 
+void Sprite::Render(ID3D11DeviceContext* immediate_context,
+	DirectX::XMFLOAT2 Pos,
+	float weight, float height,
+	float sx, float sy,
+	float sh, float sw,
+	float angle,
+	float R, float G, float B, float A)
+{
+	float l = Pos.x - weight / 2.0f;
+	float t = Pos.y + height / 2.0f;
+	float r = Pos.x + weight / 2.0f;
+	float b = Pos.y - height / 2.0f;
+
+	Render(immediate_context,
+		l, t,
+		r - l, b - t,
+		sx, sy,
+		sh, sw,
+		angle,
+		R, G, B, A);
+}
 // •`‰æŽÀs
 void Sprite::Render(ID3D11DeviceContext *immediate_context,
 	float dx, float dy,
@@ -253,6 +274,8 @@ void Sprite::Render(ID3D11DeviceContext *immediate_context,
 		D3D11_VIEWPORT viewport;
 		UINT numViewports = 1;
 		immediate_context->RSGetViewports(&numViewports, &viewport);
+		immediate_context->OMSetBlendState(blendState.Get(), nullptr, 0xFFFFFFFF);
+
 		float screen_width = viewport.Width;
 		float screen_height = viewport.Height;
 

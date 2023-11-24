@@ -2,7 +2,10 @@
 #include "player.h"
 #include<set>
 #include <vector>
+#include <DirectXMath.h>
+#include"CameraController.h"
 using namespace std;
+
 class PlayerManager
 {
 public:
@@ -12,15 +15,20 @@ public:
         return ins;
 
     }
-    void Update(float elapsedTime);
-    void Render(ID3D11DeviceContext*dc,Shader*shader);
+    void Update(float elapsedTime, CameraController cameraCotrol);
+    void Render(ID3D11DeviceContext* dc, Shader* shader);
     void clear();
     void Remove(player* pl);
-    void Register(player *pl) { players.emplace_back(pl); }
+    void Register(player* pl) { players.emplace_back(pl); }
+    void DarwDebugPrimitive();
     void DrawDebugGUI();
-    player *GetPlayer(int num) { return players.at(num); }
+    player* GetPlayer(int num) { return players.at(num); }
+
+
 private:
+
     vector<player*>players;
+
     set<player*>remove;
 
 };

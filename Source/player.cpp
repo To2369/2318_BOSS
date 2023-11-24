@@ -1,6 +1,5 @@
 #include <imgui.h>
 #include"player.h"
-#include"Input/Input.h"
 #include"camera.h"
 #include "Graphics/Graphics.h"
 #include "EnemyManager.h"
@@ -8,58 +7,47 @@
 #include"ProjectileManager.h"
 #include"ProjectileStraight.h"
 #include"ProjectileHoming.h"
+#include"CameraController.h"
 #include<string>
+#include "StageManager.h"
+#include"parameter.h"
 float player::accele;
 float player::furic;
-static player* instance_;
 
-player&player::instance()
-{
-    return *instance_;
-}
-void player::OnLanding()
-{
-    jumpCount = 0;
-    float vel = velocity.y;
-   
-    if (state!=State::Damege&&state!=State::Death)
-    {
-        TransitionLandState();
-    }
-  
-}
+
 player::player()
 {
     //model = new Model("Data/Model/Mr.Incredible/Mr.Incredible.mdl");
-    model = new Model("Data/Model/Jammo/Jammo.mdl");
+    model = new Model("Data/Model/player/player.mdl");
     //モデルが大きいのでスケーリング
     scale.x = scale.y = scale.z = 0.01f;
-    HitEffect = new Effect("Data/Effect/Hit.efk");
+    health = Param::player_param.Hp;
     TransitionIdleState();
     state = State::Idle;
-    instance_ = this;
+   
     invincibleTime_ = 0.0f;
     attackCollisionFlag = false;
-  
+    dirc = {};
 }
- player::~player()
- {
-     delete HitEffect;
-     delete model;
- }
-void player::Update(float elapsedTime)
+player::~player()
 {
-   
-  /*  GamePad& gamepad = Input::Instance().GetGamePad();
-    if (gamepad.GetButtonDown() & GamePad::BTN_B)
-    {
-        model->playAnimetion(0, false);
-    }
-    if (!model->IsPlayerAnimetion())
-    {
-        model->playAnimetion(1, true);
-    }*/
-    
+    delete HitEffect;
+    delete model;
+}
+void player::Update(float elapsedTime, CameraController cameraCotrol)
+{
+
+    /*  GamePad& gamepad = Input::Instance().GetGamePad();
+      if (gamepad.GetButtonDown() & GamePad::BTN_B)
+      {
+          model->playAnimetion(0, false);
+      }
+      if (!model->IsPlayerAnimetion())
+      {
+          model->playAnimetion(1, true);
+      }*/
+
+
     switch (state)
     {
     case State::Idle:
@@ -68,15 +56,11 @@ void player::Update(float elapsedTime)
     case State::Move:
         UpdateMoveState(elapsedTime);
         break;
-    case State::Jump:
-
-        UpdateJumpState(elapsedTime);
-        break;
-    case State::Land:
-        UpdateLandState(elapsedTime);
+    case State::Aime:
+        UpateAimState(elapsedTime);
         break;
     case State::Attack:
-        UpdateAttackState(elapsedTime);
+        UpdateAttackState(elapsedTime, cameraCotrol);
     case State::Damege:
         UpdateDamegeState(elapsedTime);
         break;
@@ -91,18 +75,18 @@ void player::Update(float elapsedTime)
     UpdateInvincibletime(elapsedTime);
     //プレイヤーと敵との衝突判定
     CollisionplayerVsEnemies();
-    ColiisionProjectileVsEnemy();
+    ColiisionProjectileVsMato();
     //オブジェクト更新処理
     UpdateTransform();
     //モデルアニメーション更新処理
     model->UpdateAnimation(elapsedTime);
     if (!model->IsPlayerAnimetion())
     {
-     
+
     }
     //モデル行列更新
     model->UpdateTransform(transform);
-   
+
 }
 
 void player::TransitionIdleState()
@@ -113,21 +97,21 @@ void player::TransitionIdleState()
 
 void player::UpdateIdleState(float elapsedTime)
 {
+    Mouse& mouse = Input::Instance().GetMouse();
+    if (mouse.GetButton() & Mouse::BTN_RIGHT)
+    {
+        circleRadius = 1.0f;
+        TransitionAimState();
+        return;
+    }
     if (InputMove(elapsedTime))
     {
 
         TransitionMOveState();
     }
-   
-    if (InputJump())
-    {
-        TransitionJumpState();
-    }
-    if (InputAttack())
-    {
-        TransitionAttackState();
-    }
-    InputProjectile();
+
+
+
 }
 
 void player::CollisionplayerVsEnemies()
@@ -141,7 +125,7 @@ void player::CollisionplayerVsEnemies()
         Enemy* enemy = enemyManager.GetEnemy(i);
         //衝突処理
         DirectX::XMFLOAT3 outPosition;
-        
+
 
         if (Collision::IntersectCylinderVsCylinder(
             GetPosition(), //playerの位置
@@ -157,7 +141,7 @@ void player::CollisionplayerVsEnemies()
             enemy->SetPosition(outPosition);
 
         }
-      
+
     }
 
 }
@@ -193,14 +177,43 @@ DirectX::XMFLOAT3 player::GetMoveVec()const
         cameraFrontX /= cameraFrontLength;
         cameraFrontZ /= cameraFrontLength;
     }
-        //スティックの水平入力値をカメラ右方向に反映し
-        //スティックの垂直入力値をカメラ前方向に反映し
-        //進行ベクトルを計算する
+    //スティックの水平入力値をカメラ右方向に反映し
+    //スティックの垂直入力値をカメラ前方向に反映し
+    //進行ベクトルを計算する
     DirectX::XMFLOAT3 vec;
-    vec.x = (cameraRightX * ax)+(cameraFrontX * ay);
+    vec.x = (cameraRightX * ax) + (cameraFrontX * ay);
     vec.z = (cameraRightZ * ax) + (cameraFrontZ * ay);
     //Y軸方向には移動しない
     vec.y = 0.0f;
+    return vec;
+}
+DirectX::XMFLOAT3 player::GetFPSCameraAngleVec() const
+{
+    // カメラ方向を取得
+    Camera& camera = Camera::instance();
+    const DirectX::XMFLOAT3& cameraFront = camera.GetFront();
+
+    // 移動ベクトルはXZ平面なベクトルになるようにする
+
+    // カメラ前方向ベクトルをXZ単位ベクトルに変換
+    float cameraFrontX = cameraFront.x;
+    float cameraFrontZ = cameraFront.z;
+    float cameraFrontLength = sqrtf(cameraFrontX * cameraFrontX + cameraFrontZ * cameraFrontZ);
+    if (cameraFrontLength > 0.0f)
+    {
+        // 単位ベクトル化
+        cameraFrontX /= cameraFrontLength;
+        cameraFrontZ /= cameraFrontLength;
+    }
+
+    // 進行ベクトルを計算する
+    DirectX::XMFLOAT3 vec;
+    vec.x = cameraFrontX;
+    vec.z = cameraFrontZ;
+
+    // Y軸方向には移動しない
+    vec.y = 0.0f;
+
     return vec;
 }
 
@@ -212,10 +225,10 @@ bool player::InputMove(float elapsedTime)
     DirectX::XMFLOAT3 moveVec = GetMoveVec();
     //移動処理
     //Move(elapsedTime, moveVec.x, moveVec.z, moveSpeed);
-     Move(moveVec.x, moveVec.z, moveSpeed);
+    Move(moveVec.x, moveVec.z, moveSpeed);
     //旋回処理
     Trun(elapsedTime, moveVec.x, moveVec.z, turnSpeed);
-    return moveVec.x > 0 || moveVec.y > 0 || moveVec.z > 0|| moveVec.x < 0 || moveVec.y < 0 || moveVec.z < 0;
+    return moveVec.x > 0 || moveVec.y > 0 || moveVec.z > 0 || moveVec.x < 0 || moveVec.y < 0 || moveVec.z < 0;
 }
 
 void player::TransitionMOveState()
@@ -226,79 +239,27 @@ void player::TransitionMOveState()
 
 void player::UpdateMoveState(float elapsedTime)
 {
-    if (InputJump())
+    Mouse& mouse = Input::Instance().GetMouse();
+    if (mouse.GetButton() & Mouse::BTN_RIGHT)
     {
-        TransitionJumpState();
+        circleRadius = 1.0f;
+        TransitionAimState();
         return;
     }
-    if (!InputJump()&& !InputMove(elapsedTime))
+    if (!InputMove(elapsedTime))
     {
         TransitionIdleState();
     }
-    if (InputAttack())
-    {
-        TransitionAttackState();
-    }
-    InputProjectile();
+
+
+
 }
 
-void player::TransitionJumpState()
-{
-    state = State::Jump;
-    model->playAnimetion(Anim_Jump,false);
-}
-
-void player::UpdateJumpState(float elapsedTime)
-{
-    if (!InputMove(elapsedTime) && isGround)
-    {
-        TransitionIdleState();
-    }
-    if (!InputJump()&&isGround)
-    {
-
-        TransitionIdleState();
-    }
-   
-    if (velocity.y < 0)
-    {
-
-        model->playAnimetion(Anim_Faling, true);
-    }
-
-    InputProjectile();
-}
-
-void player::TransitionLandState()
-{
-    state = State::Land;
-    model->playAnimetion(Anim_landing, false);
-}
-
-void player::UpdateLandState(float elapsedTime)
-{
-
-    static float LandTimer=0;
-    LandTimer += 0.02f;
-    if (LandTimer > 0.433f)
-    {
-        if (!InputJump())
-        {
-            TransitionIdleState();
-            LandTimer = 0;
-        }
-        if (!InputMove(elapsedTime))
-        {
-            TransitionIdleState();
-        }
-    }
-    InputProjectile();
-}
 
 void player::TransitionDamegeState()
 {
     state = State::Damege;
-    model->playAnimetion(Anim_GetHit1,false);
+    model->playAnimetion(Anim_GetHit1, false);
 }
 
 void player::UpdateDamegeState(float elapsedTime)
@@ -331,7 +292,7 @@ void player::CollisionNodeVsEnemies(const char* nodename, float nodeRadius)
     nodePosition.z = node->worldTransform._43;
     EnemyManager& enemy = EnemyManager::Instance();
     int count = EnemyManager::Instance().GetEnemyCount();
-    
+
     for (int i = 0; i < count; i++)
     {
         Enemy* enemys = enemy.GetEnemy(i);
@@ -362,9 +323,9 @@ void player::CollisionNodeVsEnemies(const char* nodename, float nodeRadius)
                 impulse.z = impulse.z * power;
 
                 enemys->AddImpulse(impulse);
-                
+
             }
-             if(enemys->ApplyDamage(1, 0.5f))//ヒットエフェクト再生
+            if (enemys->ApplyDamage(1, 0.5f))//ヒットエフェクト再生
             {
                 DirectX::XMFLOAT3 e = enemys->GetPosition();
                 e.y += enemys->GetHeight() * 0.5f;
@@ -374,33 +335,11 @@ void player::CollisionNodeVsEnemies(const char* nodename, float nodeRadius)
 
         }
     }
-   
+
 }
 
 
 
-bool player::InputJump()
-{
-    GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButtonDown() & GamePad::BTN_A)
-    {
-        if (jumpCount == 1)
-        {
-            jumpCount += 1;
-            Jump(jumpSpeed);
-            model->playAnimetion(Anim_Jump_Flip, false);
-            return true;
-
-        }
-        if (jumpCount < jumpLimit)
-        {
-            jumpCount += 1;
-            Jump(jumpSpeed);
-            return true;
-        }
-    }
-    return false;
-}
 
 void player::OnDamege()
 {
@@ -412,44 +351,194 @@ void player::OnDead()
     TransitionDeathState();
 }
 
-bool player::InputAttack()
+int player::Rand(float radius_)
 {
-    GamePad& gamePad = Input::Instance().GetGamePad();
-    if (gamePad.GetButton() & GamePad::BTN_B)
+    if (radius_ <= 1.0f)
     {
-        return true;
+        if (radius_ <= 0.9f)
+        {
+            if (radius_ <= 0.8f)
+            {
+                if (radius_ <= 0.7f)
+                {
+                    if (radius_ <= 0.6f)
+                    {
+                        if (radius_ <= 0.5f)
+                        {
+                            if (radius_ <= 0.4f)
+                            {
+                                if (radius_ <= 0.3f)
+                                {
+                                    if (radius_ <= 0.2f)
+                                    {
+                                        if (radius_ <= 0.1f)
+                                        {
+
+                                            return 0;
+                                        }
+
+                                        return rand() % MaxRandom02;
+                                    }
+
+                                    return rand() % MaxRandom03;
+                                }
+
+                                return rand() % MaxRandom04;
+                            }
+
+                            return rand() % MaxRandom05;
+                        }
+
+                        return rand() % MaxRandom06;
+                    }
+
+                    return rand() % MaxRandom07;
+                }
+
+                return rand() % MaxRandom08;
+            }
+
+            return rand() % MaxRandom09;
+        }
+
+        return rand() % MaxRandom10;// MaxRandom10の値は６６
     }
-    return false;
 }
+
+void player::RandomParam(int rand_, DirectX::XMFLOAT2& ArrowDirection, float radius, std::string& name)
+{
+    randP = rand_;
+    if (radius <= 1.0f)
+    {
+        if (radius <= 0.9f)
+        {
+            if (radius <= 0.8f)
+            {
+                if (radius <= 0.7f)
+                {
+                    if (radius <= 0.6f)
+                    {
+                        if (radius <= 0.5f)
+                        {
+                            if (radius <= 0.4f)
+                            {
+                                if (radius <= 0.3f)
+                                {
+                                    if (radius <= 0.2f)
+                                    {
+                                        if (radius <= 0.1f)
+                                        {
+                                            DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_01)));
+
+                                            name = "MaxRandom01";
+                                            return;
+                                        }
+                                        DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_02[rand_])));
+                                        name = "MaxRandom02";
+                                        return;
+                                    }
+                                    DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_02[rand_])));
+                                    name = "MaxRandom03";
+                                    return;
+                                }
+                                DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_04[rand_])));
+                                name = "MaxRandom04";
+                                return;
+                            }
+                            DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_05[rand_])));
+                            name = "MaxRandom05";
+                            return;
+                        }
+                        DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_06[rand_])));
+                        name = "MaxRandom06";
+                        return;
+                    }
+                    DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_07[rand_])));
+                    name = "MaxRandom07";
+                    return;
+                }
+                DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_08[rand_])));
+                name = "MaxRandom08";
+                return;
+            }
+            DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_09[rand_])));
+            name = "MaxRandom09";
+            return;
+        }
+        DirectX::XMStoreFloat2(&ArrowDirection, DirectX::XMVectorAdd(DirectX::XMLoadFloat2(&ArrowDirection), DirectX::XMLoadFloat2(&ArrowDirection_ver_1[rand_])));
+        name = "MaxRandom10";
+        return;
+    }
+}
+
 
 void player::TransitionAttackState()
 {
     state = State::Attack;
-    model->playAnimetion(Anim_Attack,false);
+    model->playAnimetion(Anim_Attack, false);
 
 }
 
-void player::UpdateAttackState(float elapsedTime)
+void player::UpdateAttackState(float elapsedTime, CameraController camera)
 {
-    static float anime_atk_time = 0;
-    anime_atk_time += 0.02f;
-    if (anime_atk_time>0.800f)
+    float animationTime = model->GetAnimationTime();
+    float nextAnimationTime = 0.690f;//待機状態にいくまでのタイム
+    float startAttackTime = 0.162f;
+    float EndAttackTime = 0.182f;
+    //framerate 0.017
+    if (animationTime <= nextAnimationTime)
     {
-      
-        anime_atk_time = 0;
-        if (!InputAttack())
+
+        if (animationTime >= startAttackTime && animationTime <= EndAttackTime)
         {
-            TransitionIdleState();
+
+            InputProjectile();
         }
     }
-    float animationTime=model->GetAnimationTime();
-    attackCollisionFlag = animationTime > 0.4f;
-    if (attackCollisionFlag)
+    else
     {
-        CollisionNodeVsEnemies("mixamorig:LeftHand", leftHandRadius);
+        Set_TPPorFPS_Flag(true);
+        TransitionIdleState();
     }
+
 }
 
+void player::TransitionAimState()
+{
+    state = State::Aime;
+    model->playAnimetion(Anim_Aime_Idle, true);
+
+}
+
+void player::UpateAimState(float elapsedTime)
+{
+    Set_TPPorFPS_Flag(false);
+    Mouse& mouse = Input::Instance().GetMouse();
+
+    if (mouse.GetButton() & Mouse::BTN_RIGHT)
+    {
+        circleRadius -= radiusSpeed;
+        if (circleRadius <= 0)
+        {
+            circleRadius = 1.0f;
+        }
+        if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+        {
+
+            TransitionAttackState();
+        }
+
+        DirectX::XMFLOAT3 vec = GetFPSCameraAngleVec();
+        Trun(elapsedTime, vec.x, vec.z, 800);
+
+    }
+    else
+    {
+
+        Set_TPPorFPS_Flag(true);
+        TransitionIdleState();
+    }
+}
 
 
 void player::Render(ID3D11DeviceContext* dc, Shader* shader)
@@ -467,46 +556,48 @@ void player::DarwDebugPrimitive()
     //弾丸デバッグプリミティブ描画
     projectileManager.DrawdebugPrimitive();
 
-   
-    if (attackCollisionFlag)
-    {
-        Model::Node* LeftHandBone = model->FindNode("mixamorig:LeftHand");
-        debugRender->DrawSphere(DirectX::XMFLOAT3(
-            LeftHandBone->worldTransform._41,
-            LeftHandBone->worldTransform._42,
-            LeftHandBone->worldTransform._43),
-            leftHandRadius,
-            DirectX::XMFLOAT4(1, 0, 0, 1)
-        );
-    }
-                                               
+
+
+    // Model::Node* LeftHandBone = model->FindNode("mixamorig:LeftHand");
+    Model::Node* LeftHandBone = model->FindNode(GetNodename(PlayerNodeName::rightarm));
+
+    debugRender->DrawSphere(DirectX::XMFLOAT3(
+        LeftHandBone->worldTransform._41,
+        LeftHandBone->worldTransform._42,
+        LeftHandBone->worldTransform._43),
+        leftHandRadius,
+        DirectX::XMFLOAT4(1, 0, 0, 1)
+    );
+
+
 }
 void player::InputProjectile()
 {
-    GamePad& gamePad = Input::Instance().GetGamePad();
     //直進弾丸発射
     DirectX::XMFLOAT3 dir{};
     DirectX::XMFLOAT3 pos{};
-    if (gamePad.GetButtonDown() & GamePad::BTN_X)
+    DirectX::XMFLOAT2 ArrowDirection{};
+
+    if (GetPerspectiveChangeFlag().FPS)
     {
-        if(!GetPerspectiveChangeFlag().TPS)
-        {
-            //前方向
-            dir.x = Camera::instance().GetFront().x;
-            dir.y = Camera::instance().GetFront().y;
-            dir.z = Camera::instance().GetFront().z;
+        RandomParam(Rand(circleRadius), ArrowDirection, circleRadius, RandamParam_name);
 
-           //発射位置
-            pos.x = position.x;
-            pos.y = position.y + height * 0.5f;
-            pos.z = position.z;
+        //前方向
+        dir.x = Camera::instance().GetFront().x + ArrowDirection.x;
+        dir.y = Camera::instance().GetFront().y + ArrowDirection.y;
+        dir.z = Camera::instance().GetFront().z;
 
-        }
-        //発射
-        ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
-        projectile->Launch(dir, pos);
-      //projectileManager.Register(projectile);
+        //発射位置
+        pos.x = position.x;
+        pos.y = position.y + height * 0.5f;
+        pos.z = position.z;
+
     }
+    //発射
+    ProjectileStraight* projectile = new ProjectileStraight(&projectileManager);
+    projectile->Launch(dir, pos, projectileSpeed);
+    //projectileManager.Register(projectile);
+
 
     ////追尾弾丸発射
     //if (gamePad.GetButtonDown() & GamePad::BTN_Y)
@@ -558,71 +649,67 @@ void player::InputProjectile()
     //    ProjectileHoming* projectile = new ProjectileHoming(&projectileManager);
     //    projectile->Launch(dir, pos, target);
     //}
-    
+
 
 
 }
 
 //球丸
-void player::ColiisionProjectileVsEnemy()
+void player::ColiisionProjectileVsMato()
 {
+#if 0
+    int progectileCount = projectileManager.GetProjectileCount();
+    HitResult hit;
+    for (int i = 0; i < progectileCount; ++i)
+    {
+
+        Projectile* projectile = projectile = projectileManager.GetProgectile(i);
+        DirectX::XMFLOAT3 Start{ projectile->GetPosition().x,projectile->GetPosition().y + 1,projectile->GetPosition().z };
+        DirectX::XMFLOAT3 End{ projectile->GetPosition().x,projectile->GetPosition().y + 1,projectile->GetPosition().z + projectile->GetAdjustPos() };
+        if (StageManager::Instance().RayCast(Start, End, hit))
+        {
+            int a = 0;
+            // normal = hit.normal;
+             //地面に接地している
+             /*position = hit.position;
+             angle.y += hit.rotation.y;*/
+             //傾斜率の計算
+           /*  float normalLengthZ = sqrtf(hit.normal.x * hit.normal.x + hit.normal.z * hit.normal.z);
+             slopeRate = 1.0f - (hit.normal.y / (normalLengthZ + hit.normal.y));*/
+             //着地した
+
+        }
+    }
+#else
     EnemyManager& enemyManager = EnemyManager::Instance();
     //すべての弾丸と全ての敵を総当たりで衝突判定
     int progectileCount = projectileManager.GetProjectileCount();
     int enemyCount = enemyManager.GetEnemyCount();
+    HitResult hit;
     for (int i = 0; i < progectileCount; ++i)
     {
         Projectile* projectile = projectile = projectileManager.GetProgectile(i);
+        DirectX::XMFLOAT3 Start{ projectile->GetPosition() };
+        DirectX::XMFLOAT3 End{ projectile->GetPosition().x,projectile->GetPosition().y,projectile->GetPosition().z + projectile->GetAdjustPos() };
         for (int j = 0; j < enemyCount; j++)
         {
             Enemy* enemy = enemyManager.GetEnemy(j);
             //衝突判定
             DirectX::XMFLOAT3 outPosition;
-            if (Collision::IntersectSphereVsCylinder(
-                projectile->GetPosition(),
-                projectile->GetRadius(),
-                enemy->GetPosition(),
-                enemy->getRadius(),
-                enemy->GetHeight(),
-                outPosition))
+            if (Collision::InstersectRayVsModel(Start, End, enemy->GetCharacterModel(), hit))
             {
-
+                SetMaterialNum(hit.materialIndex);
                 //ダメージを与える
                 if (enemy->ApplyDamage(1, 0.5f))
                 {
-                    //吹き飛ばす
-                    {   //吹き飛ばす移動方向ベクトル
-                        DirectX::XMFLOAT3 impulse;
-                        //吹き飛ばす力
-                        const float power = 10.0f;
-                        //敵の位置
-                        DirectX::XMVECTOR enemyVec = DirectX::XMLoadFloat3(&enemy->GetPosition());
-                        //弾の位置
-                        DirectX::XMVECTOR projectileVec = DirectX::XMLoadFloat3(&projectile->GetPosition());
-                        //弾から敵への方向ベクトルを計算
-                        DirectX::XMVECTOR Vec = DirectX::XMVectorSubtract(enemyVec, projectileVec);
-                        //方向ベクトルを正規化
-                        Vec=DirectX::XMVector3Normalize(Vec);
-                        DirectX::XMStoreFloat3(&impulse, Vec);
-                        //吹き飛ばす移動方向の速度ベクトルにpowerを掛けて設定
-                        impulse.x = impulse.x * power;
-                        impulse.y = impulse.y * power;
-                        impulse.z = impulse.z * power;
-                   
-                        enemy->AddImpulse(impulse);
-                        if (enemy->ApplyDamage(1, 0.5f))
-                        {
-                            DirectX::XMFLOAT3 e = enemy->GetPosition();
-                            e.y += enemy->GetHeight() * 0.5f;
-                            HitEffect->Play(e);
-                        }
-                    }
-                    //ヒットエフェクト再生
-                   
                     projectile->Destroy();
+                }
+            }
+            else
+            {
 
-                };
             }
         }
     }
+#endif
 }

@@ -2,12 +2,12 @@
 #include"Graphics/Graphics.h"
 #include"collision.h"
 #include"player.h"
-
-void PlayerManager::Update(float elapsedTime)
+#include"parameter.h"
+void PlayerManager::Update(float elapsedTime, CameraController cameraCotrol)
 {
     for (player* Player : players)
     {
-        Player->Update(elapsedTime);
+        Player->Update(elapsedTime, cameraCotrol);
     }
     for (player* pl : remove)
     {
@@ -50,6 +50,14 @@ void PlayerManager::Remove(player* pl)
     remove.insert(pl);
 }
 
+void PlayerManager::DarwDebugPrimitive()
+{
+    for (player* pl : players)
+    {
+        pl->DarwDebugPrimitive();
+    }
+}
+
 void PlayerManager::DrawDebugGUI()
 {
     ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
@@ -60,49 +68,102 @@ void PlayerManager::DrawDebugGUI()
 
     if (ImGui::Begin("player", nullptr, ImGuiWindowFlags_None))
     {
+
         //トランスフォーム
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
         {
             for (player* pl : players)
             {
-                
-                static bool flag = false;
-                if (ImGui::Checkbox(u8"ワンショットアニメーション処理&アニメーション処理", &flag))
-                {
-                    pl->GetCharacterModel()->SetOneShotMove(flag);
-                    pl->GetCharacterModel()->Setanime_clip(flag);
-                };
-                float animetime = pl->GetCharacterModel()->GetAnimationTime();
-                if (ImGui::CollapsingHeader("animation_kanren", ImGuiTreeNodeFlags_DefaultOpen))
-                {
-                    ImGui::InputFloat("Animetion_Freame", &animetime);
-                    float ab = pl->GetCharacterModel()->GetanimetionBlendtimer();
-                    ImGui::InputFloat("AnimetionBlend_Freame", &ab);
-                }
+
+                /* static bool flag = false;
+                 if (ImGui::Checkbox(u8"ワンショットアニメーション処理&アニメーション処理", &flag))
+                 {
+                     pl->GetCharacterModel()->SetOneShotMove(flag);
+                     pl->GetCharacterModel()->Setanime_clip(flag);
+                 };
+                 float animetime = pl->GetCharacterModel()->GetAnimationTime();
+                 if (ImGui::CollapsingHeader("animation_kanren", ImGuiTreeNodeFlags_DefaultOpen))
+                 {
+                     ImGui::InputFloat("Animetion_Freame", &animetime);
+                     float ab = pl->GetCharacterModel()->GetanimetionBlendtimer();
+                     ImGui::InputFloat("AnimetionBlend_Freame", &ab);
+                 }*/
                 if (ImGui::CollapsingHeader("changeFPSorTPS", ImGuiTreeNodeFlags_DefaultOpen))
                 {
                     if (ImGui::Button("TPS"))
                     {
-                       pl->Set_TPPorFPS_Flag(true);
+                        pl->Set_TPPorFPS_Flag(true);
                     }
                     if (ImGui::Button("FPS"))
                     {
                         pl->Set_TPPorFPS_Flag(false);
                     }
-                    auto p = [](bool TorF)
+                    //ラムダ関数
                     {
-                        switch (TorF)
+                        auto p = [](bool TorF)
                         {
-                        case true:
-                            return "TPS";
-                            break;
-                        case false:
-                            return "FPS";
-                            break;
-                        }
-                    };
-                    std::string flagcheck = p(pl->GetPerspectiveChangeFlag().TPS);
-                    ImGui::Text("PersPective:%s", flagcheck.c_str());
+                            switch (TorF)
+                            {
+                            case true:
+                                return "TPS";
+                                break;
+                            case false:
+                                return "FPS";
+                                break;
+                            }
+                        };
+                        std::string flagcheck = p(pl->GetPerspectiveChangeFlag().TPS);
+                        ImGui::Text("PersPective:%s", flagcheck.c_str());
+                    }
+
+                    ImGui::Text("%s", pl->GetStringState(pl->GetState()).c_str());
+                    static float ajust = 0;
+
+                    ImGui::SliderFloat("hanteiPos", &ajust, 0.0f, 5.0f);
+
+                    for (int i = 0; i < pl->GetProjectileM().GetProjectileCount(); i++)
+                    {
+                        float ajustcheck = pl->GetProjectileM().GetProgectile(i)->GetAdjustPos();
+                        ImGui::InputFloat("hanteiPos", &ajustcheck);
+                        //pl->GetProjectileM().GetProgectile(i)->SetAdjustPos(ajust);
+                        DirectX::XMFLOAT3 prpos{ pl->GetProjectileM().GetProgectile(i)->GetPosition() };
+                        ImGui::InputFloat3("hanteiPos", &prpos.x);
+                    }
+
+                }
+                if (ImGui::CollapsingHeader("MaterialNum", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    player* pl = players.at(0);
+                    bool clearflag = false;
+                    for (int i = 0; i < pl->GetMaterialCount(); i++)
+                    {
+                        int material = pl->GetMaterialNum(i);
+                        ImGui::InputInt("MaterialNum", &material);
+                    }
+                    if (ImGui::Button("materialNumClear"))
+                    {
+                        clearflag = true;
+                        pl->DebugMaterialClear(clearflag);
+                    }
+                }
+                if (ImGui::CollapsingHeader("Arrow_Param", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    static DirectX::XMFLOAT3 ang{};
+                    ImGui::SliderFloat3("ArrowAngle", &ang.x, 0.0f, 10.0f);
+                    pl->SetDirection_P(ang);
+
+                }
+                if (ImGui::CollapsingHeader("CircleParam", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    float radius = pl->GetCircleRadius();
+                    int randP = pl->GetRand();
+                    static float sp_radius = 0.01f;
+
+                    ImGui::InputFloat("CircleRadius", &radius);
+                    ImGui::InputFloat("SpeedRadius", &sp_radius);
+                    pl->SetRadiusSpeed(sp_radius);
+                    ImGui::Text("GetNowRandam_name:%s", pl->GetNowRandam_name().c_str());
+                    ImGui::InputInt("Random_atai", &randP);
                 }
                 /* ImGui::InputFloat("furiction", &furic);
                  ImGui::InputFloat("acceleration", &accele);
@@ -110,6 +171,7 @@ void PlayerManager::DrawDebugGUI()
                  ImGui::InputInt("jumpcount", &jumpCount);*/
             }
         }
+
     }
     ImGui::End();
 }

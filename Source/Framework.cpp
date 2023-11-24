@@ -1,6 +1,6 @@
 #include <memory>
 #include <sstream>
-
+#include <cstdlib>
 #include "Graphics/Graphics.h"
 #include "Input/Input.h"
 #include"SceneManager.h"
@@ -20,7 +20,7 @@ Framework::Framework(HWND hWnd)
 {
 	EffectManager::Instance().Initialize();
 	//sceneGame.Initialize();
-
+	srand((unsigned int)time(NULL));
 	SceneManager::Instance().ChangeScene(new ScnenTitle);
 }
 
@@ -63,14 +63,14 @@ void Framework::Render(float elapsedTime/*Elapsed seconds from last frame*/)
 	// IMGUIデモウインドウ描画（IMGUI機能テスト用）
 	//ImGui::ShowDemoWindow();
 
-	
+
 
 	// IMGUI描画
 	graphics.GetImGuiRenderer()->Render(dc);
 
 	// バックバッファに描画した画を画面に表示する。
 	graphics.GetSwapChain()->Present(syncInterval, 0);
-	
+
 }
 
 // フレームレート計算
