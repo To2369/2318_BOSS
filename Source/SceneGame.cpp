@@ -5,6 +5,7 @@
 #include"enemy.h"
 #include"EnemyManager.h"
 #include"EnemySlaime.h"
+#include"EnemyBoss.h"
 #include"EffectManager.h"
 #include"Input/Mouse.h"
 #include"Input/Input.h"
@@ -41,6 +42,9 @@ void SceneGame::Initialize()
 		enemyManager.Register(slime);
 
 	}
+	EnemyBoss* boss = new EnemyBoss;
+	boss->SetPosition(DirectX::XMFLOAT3(2.0f, 0, 5));
+	enemyManager.Register(boss);
 	//todo:ƒJƒƒ‰‰Šúİ’è
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::instance();
