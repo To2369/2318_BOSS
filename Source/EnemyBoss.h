@@ -36,8 +36,17 @@ private:
     void TransitionPursuitState();                      //追跡ステートへ遷移
     void UpdatePursuitState(float elapsedTime);         //追跡ステート更新処理
 
-    void TransitionAttackState();                       //攻撃ステートへ遷移
-    void UpdateAttackState(float elapsedTime);          //攻撃ステート更新処理
+    void TransitionAttack0State();                       //攻撃ステート0へ遷移
+    void UpdateAttack0State(float elapsedTime);          //攻撃ステート0更新処理
+
+    void TransitionAttack1State();                       //攻撃ステート1へ遷移
+    void UpdateAttack1State(float elapsedTime);          //攻撃ステート1更新処理
+
+    void TransitionAttack2State();                       //攻撃ステート2へ遷移
+    void UpdateAttack2State(float elapsedTime);          //攻撃ステート2更新処理
+
+    void TransitionAttack3State();                       //攻撃ステート3へ遷移
+    void UpdateAttack3State(float elapsedTime);          //攻撃ステート3更新処理
 
     void TransitionBattleIdleState();                   //戦闘待機ステートへ遷移
     void UpdateBattleIdleState(float elapsedTime);      //戦闘待機ステート更新処理
@@ -53,9 +62,13 @@ private:
         Idle,
         Pursuit,
         Damege,
-        Attack,
+        Attack0,
+        Attack1,
+        Attack2,
+        Attack3,
         Death,
         Idle_Battle,
+
        /* Wander,
         Idle,
         Pursuit,
@@ -97,4 +110,5 @@ private:
     float turnSpeed = DirectX::XMConvertToRadians(360);
     float serachRange = 10.0f;                           //索敵範囲
     float attackRange = 5.0f;                           //攻撃範囲
+    int RandomState = 0;
 };

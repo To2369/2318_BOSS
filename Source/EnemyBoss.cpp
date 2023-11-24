@@ -1,7 +1,7 @@
 #include"EnemyBoss.h"
 #include"Graphics/Graphics.h"
 #include"mathf.h"
-#include "player.h"
+#include"player.h"
 #include"collision.h"
 //コンストラクタ
 EnemyBoss::EnemyBoss()
@@ -34,8 +34,14 @@ void EnemyBoss::Update(float elapsedTime)
     case State::Pursuit:
         UpdatePursuitState(elapsedTime);
         break;
-    case State::Attack:
-        UpdateAttackState(elapsedTime);
+    case State::Attack0:
+        UpdateAttack0State(elapsedTime);
+    case State::Attack1:
+        UpdateAttack1State(elapsedTime);
+    case State::Attack2:
+        UpdateAttack2State(elapsedTime);
+    case State::Attack3:
+        UpdateAttack3State(elapsedTime);
     case State::Idle_Battle:
         UpdateBattleIdleState(elapsedTime);
         break;
@@ -239,15 +245,111 @@ void EnemyBoss::UpdatePursuitState(float elapsedTime)
     }
 }
 
-//攻撃ステートへ遷移
-void EnemyBoss::TransitionAttackState()
+//攻撃ステート0へ遷移
+void EnemyBoss::TransitionAttack0State()
 {
-    state = State::Attack;
+    state = State::Attack0;
+    model->playAnimetion(Anim_Scream, false);
+}
+
+//攻撃ステート0更新処理
+void EnemyBoss::UpdateAttack0State(float elapsedTime)
+{
+    float animationTime = model->GetCurrentAnimationSeconds();
+    if (animationTime >= 0.1f && animationTime <= 1.33f)
+    {
+        CollisionNodeVsPlayer("Chest", 1.0f);
+
+    }
+    if (!model->IsPlayerAnimetion())
+    {
+        float vx = targetPositoin.x - position.x;
+        float vy = targetPositoin.y - position.y;
+        float vz = targetPositoin.z - position.z;
+        float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+
+        if (dist < attackRange)
+        {
+            TransitionIdleState();
+            return;
+        }
+        TransitionBattleIdleState();
+    }
+}
+
+//攻撃ステート1へ遷移
+void EnemyBoss::TransitionAttack1State()
+{
+    state = State::Attack1;
     model->playAnimetion(Anim_ClawAttack, false);
 }
 
-//攻撃ステート更新処理
-void EnemyBoss::UpdateAttackState(float elapsedTime)
+//攻撃ステート1更新処理
+void EnemyBoss::UpdateAttack1State(float elapsedTime)
+{
+    float animationTime = model->GetCurrentAnimationSeconds();
+    if (animationTime >= 0.1f && animationTime <= 1.33f)
+    {
+        CollisionNodeVsPlayer("Chest", 1.0f);
+
+    }
+    if (!model->IsPlayerAnimetion())
+    {
+        float vx = targetPositoin.x - position.x;
+        float vy = targetPositoin.y - position.y;
+        float vz = targetPositoin.z - position.z;
+        float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+
+        if (dist < attackRange)
+        {
+            TransitionIdleState();
+            return;
+        }
+        TransitionBattleIdleState();
+    }
+}
+
+//攻撃ステート2へ遷移
+void EnemyBoss::TransitionAttack2State()
+{
+    state = State::Attack2;
+    model->playAnimetion(Anim_Sleep, false);
+}
+
+//攻撃ステート2更新処理
+void EnemyBoss::UpdateAttack2State(float elapsedTime)
+{
+    float animationTime = model->GetCurrentAnimationSeconds();
+    if (animationTime >= 0.1f && animationTime <= 1.33f)
+    {
+        CollisionNodeVsPlayer("Chest", 1.0f);
+
+    }
+    if (!model->IsPlayerAnimetion())
+    {
+        float vx = targetPositoin.x - position.x;
+        float vy = targetPositoin.y - position.y;
+        float vz = targetPositoin.z - position.z;
+        float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+
+        if (dist < attackRange)
+        {
+            TransitionIdleState();
+            return;
+        }
+        TransitionBattleIdleState();
+    }
+}
+
+//攻撃ステート3へ遷移
+void EnemyBoss::TransitionAttack3State()
+{
+    state = State::Attack3;
+    model->playAnimetion(Anim_TakeOff, false);
+}
+
+//攻撃ステート3更新処理
+void EnemyBoss::UpdateAttack3State(float elapsedTime)
 {
     float animationTime = model->GetCurrentAnimationSeconds();
     if (animationTime >= 0.1f && animationTime <= 1.33f)
@@ -284,7 +386,18 @@ void EnemyBoss::UpdateBattleIdleState(float elapsedTime)
 {
     if (!model->IsPlayerAnimetion())
     {
-        TransitionAttackState();
+        RandomState = (int)Mathf::RandameRange(0.0f, 3.0f);
+        switch (RandomState)
+        {
+        case 0:
+            TransitionAttack0State();break;
+        case 1:
+            TransitionAttack1State(); break;
+        case 2:
+            TransitionAttack2State(); break;
+        case 3:
+            TransitionAttack3State(); break;
+        }
     }
 }
 
