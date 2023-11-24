@@ -124,6 +124,7 @@
     <ClInclude Include="Source\Effeck.h" />
     <ClInclude Include="Source\EffectManager.h" />
     <ClInclude Include="Source\enemy.h" />
+    <ClInclude Include="Source\EnemyBoss.h" />
     <ClInclude Include="Source\EnemyManager.h" />
     <ClInclude Include="Source\enemySlaime.h" />
     <ClInclude Include="Source\Framework.h" />
@@ -179,6 +180,7 @@
     <ClCompile Include="Source\Effeck.cpp" />
     <ClCompile Include="Source\EffectManager.cpp" />
     <ClCompile Include="Source\enemy.cpp" />
+    <ClCompile Include="Source\EnemyBoss.cpp" />
     <ClCompile Include="Source\enemyManager.cpp" />
     <ClCompile Include="Source\enemySlaime.cpp" />
     <ClCompile Include="Source\Framework.cpp" />
