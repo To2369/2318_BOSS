@@ -36,12 +36,16 @@ void EnemyBoss::Update(float elapsedTime)
         break;
     case State::Attack0:
         UpdateAttack0State(elapsedTime);
+        break;
     case State::Attack1:
         UpdateAttack1State(elapsedTime);
+        break;
     case State::Attack2:
         UpdateAttack2State(elapsedTime);
+        break;
     case State::Attack3:
         UpdateAttack3State(elapsedTime);
+        break;
     case State::Idle_Battle:
         UpdateBattleIdleState(elapsedTime);
         break;
