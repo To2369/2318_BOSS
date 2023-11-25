@@ -7,6 +7,7 @@
 #include"player.h"
 #include"stageMain.h"
 #include"StageManager.h"
+#include"FierdBuff.h"
 // ゲームシーン
 class SceneGame :public Scene
 {
@@ -48,4 +49,5 @@ private://追加しもの
 	CameraController* cameraController_ = nullptr;
 	std::unique_ptr<Sprite>circle = std::make_unique<Sprite>("Data/Sprite/サークル.png");
 	StageManager& stagemanager = StageManager::Instance();
+	std::unique_ptr<FierdBuff>FB;//フィールドバフ
 };

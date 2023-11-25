@@ -50,7 +50,7 @@ protected:
      0,1,0,0,
      0,0,1,0,
      0,0,0,1 };
-    float adjustPos = 1.433;
+    float adjustPos = 1.433f;
     float radius = 0.1f;
     Model* model = nullptr;
     ProjectileManager* mgr = nullptr;

@@ -15,14 +15,13 @@
 // 初期化
 using namespace Debugparam;
 static DirectX::XMFLOAT2 Spritecenter{};
-static float scale = 1;
-static float angg = {};
+
 void SceneGame::Initialize()
 {
 	//ステージ初期化
 
 
-
+	FB = std::make_unique<FierdBuff>();
 	player* pl = new player;
 	pl->Set_TPPorFPS_Flag(true);
 	pl->SetPosition({});
@@ -108,7 +107,9 @@ void SceneGame::Update(float elapsedTime)
 	cameraController_->Update(elapsedTime);
 
 	StageManager::Instance().Update(elapsedTime);
-	PlayerManager::Instance().Update(elapsedTime, *cameraController_);
+	PlayerManager::Instance().Update(elapsedTime, *cameraController_,*FB);
+	
+	FB->Update(elapsedTime);
 	EnemyManager::Instance().Update(elapsedTime);
 	EffectManager::Instance().Update(elapsedTime);
 
@@ -158,6 +159,7 @@ void SceneGame::Render()
 		//プレイヤーデバッグ表示
 		PlayerManager::Instance().DarwDebugPrimitive();
 		EnemyManager::Instance().DrawDebugprimitive();
+		FB->primitive();
 		// ラインレンダラ描画実行
 		graphics.GetLineRenderer()->Render(dc, rc.view, rc.projection);
 
@@ -195,7 +197,7 @@ void SceneGame::Render()
 		PlayerManager::Instance().DrawDebugGUI();
 		//cameraController_->DrawDebugGUI();
 		//EnemyManager::Instance().DrawDebugGUI();
-		//DrawDebugGui();
+		DrawDebugGui();
 	}
 }
 
@@ -210,10 +212,21 @@ void SceneGame::DrawDebugGui()
 
 	if (ImGui::Begin("SceneGame", nullptr, ImGuiWindowFlags_None))
 	{
-		ImGui::InputFloat("FrameRate", &frameRateCheck);
-		
-		ImGui::SliderFloat("scale", &scale, 0.f, 1.0f);
-		//ImGui::SliderFloat2("angle", &angg, 0.f, 1000.0f);
+		if (ImGui::CollapsingHeader("FrameRateCheck", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			ImGui::InputFloat("FrameRate", &frameRateCheck);
+		}
+		if (ImGui::CollapsingHeader("FierdBuff", ImGuiTreeNodeFlags_DefaultOpen))
+		{
+			DirectX::XMFLOAT2 fb = FB->GetNumber();
+
+			ImGui::InputFloat("FierdPosX", &fb.x);
+			ImGui::InputFloat("FierdPosY", &fb.y);
+			ImGui::Text("state:%s", FB->GetStateName().c_str());
+
+		}
+
+
 	}
 	ImGui::End();
 

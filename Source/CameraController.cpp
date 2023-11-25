@@ -18,7 +18,7 @@ void CameraController::Update(float elapsedtime)
     bool changecountflag = Changecount > 0 ? true : false;
     //ƒJƒƒ‰‚Ì‰ñ“]‘¬“x
     float speed = rollSpeed * elapsedtime;
-#if 1
+#if 0
     GamePad& gamePad = Input::Instance().GetGamePad();
     float ax = gamePad.GetAxisRX();
     float ay = gamePad.GetAxisRY();

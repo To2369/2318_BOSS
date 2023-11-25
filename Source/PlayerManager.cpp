@@ -3,11 +3,12 @@
 #include"collision.h"
 #include"player.h"
 #include"parameter.h"
-void PlayerManager::Update(float elapsedTime, CameraController cameraCotrol)
+#include"FierdBuff.h"
+void PlayerManager::Update(float elapsedTime, CameraController cameraCotrol,FierdBuff&FB)
 {
     for (player* Player : players)
     {
-        Player->Update(elapsedTime, cameraCotrol);
+        Player->Update(elapsedTime, cameraCotrol,FB);
     }
     for (player* pl : remove)
     {
@@ -74,7 +75,7 @@ void PlayerManager::DrawDebugGUI()
         {
             for (player* pl : players)
             {
-
+                DirectX::XMFLOAT3 plPos = pl->GetPosition();
                 /* static bool flag = false;
                  if (ImGui::Checkbox(u8"ワンショットアニメーション処理&アニメーション処理", &flag))
                  {
@@ -88,6 +89,7 @@ void PlayerManager::DrawDebugGUI()
                      float ab = pl->GetCharacterModel()->GetanimetionBlendtimer();
                      ImGui::InputFloat("AnimetionBlend_Freame", &ab);
                  }*/
+                ImGui::InputFloat3("player_Position" ,&plPos.x);
                 if (ImGui::CollapsingHeader("changeFPSorTPS", ImGuiTreeNodeFlags_DefaultOpen))
                 {
                     if (ImGui::Button("TPS"))
@@ -156,6 +158,12 @@ void PlayerManager::DrawDebugGUI()
                     ImGui::Text("GetNowRandam_name:%s", pl->GetNowRandam_name().c_str());
                     ImGui::InputInt("Random_atai", &randP);
                     ImGui::InputFloat2("Random_Pos", &Rp.x);
+                }
+
+                if (ImGui::CollapsingHeader("magnification", ImGuiTreeNodeFlags_DefaultOpen))
+                {
+                    int bairitu = pl->Getmagnification();
+                    ImGui::InputInt("bairitu", &bairitu);
                 }
                
             }

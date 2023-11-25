@@ -10,7 +10,7 @@ namespace Param
     {
         float MoveSpeed = 0;//プレイヤーの移動速度
         float DamegeParam = 0;//弾のダメージ数値
-        float Hp = 3;//プレイヤーHP
+        int Hp = 3;//プレイヤーHP
     };
     static   PlayerParam player_param{};
 

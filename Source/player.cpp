@@ -11,6 +11,7 @@
 #include<string>
 #include "StageManager.h"
 #include"parameter.h"
+
 float player::accele;
 float player::furic;
 
@@ -34,7 +35,7 @@ player::~player()
     delete HitEffect;
     delete model;
 }
-void player::Update(float elapsedTime, CameraController cameraCotrol)
+void player::Update(float elapsedTime, CameraController cameraCotrol,FierdBuff&FB)
 {
 
     /*  GamePad& gamepad = Input::Instance().GetGamePad();
@@ -60,7 +61,7 @@ void player::Update(float elapsedTime, CameraController cameraCotrol)
         UpateAimState(elapsedTime);
         break;
     case State::Attack:
-        UpdateAttackState(elapsedTime, cameraCotrol);
+        UpdateAttackState(elapsedTime, cameraCotrol,FB);
     case State::Damege:
         UpdateDamegeState(elapsedTime);
         break;
@@ -78,6 +79,7 @@ void player::Update(float elapsedTime, CameraController cameraCotrol)
     ColiisionProjectileVsMato();
     //オブジェクト更新処理
     UpdateTransform();
+   
     //モデルアニメーション更新処理
     model->UpdateAnimation(elapsedTime);
     if (!model->IsPlayerAnimetion())
@@ -479,7 +481,7 @@ void player::TransitionAttackState()
 
 }
 
-void player::UpdateAttackState(float elapsedTime, CameraController camera)
+void player::UpdateAttackState(float elapsedTime, CameraController camera,FierdBuff&FB)
 {
     float animationTime = model->GetAnimationTime();
     float nextAnimationTime = 0.690f;//待機状態にいくまでのタイム
@@ -491,6 +493,14 @@ void player::UpdateAttackState(float elapsedTime, CameraController camera)
 
         if (animationTime >= startAttackTime && animationTime <= EndAttackTime)
         {
+            if (FB.GetBuffPanelState() == magnificationPanelState::State1)
+            {
+                FB.SetBuffPanelState(magnificationPanelState::State2);
+            }
+            else if (FB.GetBuffPanelState() == magnificationPanelState::State2)
+            {
+               FB.SetBuffPanelState(magnificationPanelState::State1);
+            }
 
             InputProjectile();
         }
@@ -555,7 +565,7 @@ void player::DarwDebugPrimitive()
     debugRender->DrawCylinder(position, radius, height, DirectX::XMFLOAT4{ 0,0,0,1 });
     //弾丸デバッグプリミティブ描画
     projectileManager.DrawdebugPrimitive();
-
+    
 
 
     // Model::Node* LeftHandBone = model->FindNode("mixamorig:LeftHand");
@@ -657,59 +667,36 @@ void player::InputProjectile()
 //球丸
 void player::ColiisionProjectileVsMato()
 {
-#if 0
-    int progectileCount = projectileManager.GetProjectileCount();
-    HitResult hit;
-    for (int i = 0; i < progectileCount; ++i)
-    {
+    //EnemyManager& enemyManager = EnemyManager::Instance();
+    ////すべての弾丸と全ての敵を総当たりで衝突判定
+    //int progectileCount = projectileManager.GetProjectileCount();
+    //int enemyCount = enemyManager.GetEnemyCount();
+    //HitResult hit;
+    //for (int i = 0; i < progectileCount; ++i)
+    //{
+    //    Projectile* projectile = projectile = projectileManager.GetProgectile(i);
+    //    DirectX::XMFLOAT3 Start{ projectile->GetPosition() };
+    //    DirectX::XMFLOAT3 End{ projectile->GetPosition().x,projectile->GetPosition().y,projectile->GetPosition().z + projectile->GetAdjustPos() };
+    //    for (int j = 0; j < enemyCount; j++)
+    //    {
+    //        Enemy* enemy = enemyManager.GetEnemy(j);
+    //        //衝突判定
+    //        DirectX::XMFLOAT3 outPosition;
+    //        if (Collision::InstersectRayVsModel(Start, End, enemy->GetCharacterModel(), hit))
+    //        {
+    //            SetMaterialNum(hit.materialIndex);
+    //            //ダメージを与える
+    //            if (magnification_P == 0)
+    //            {
+    //                magnification_P = 1;
+    //            }
+    //            if (enemy->ApplyDamage(1*magnification_P, 0.5f))
+    //            {
+    //                projectile->Destroy();
+    //            }
+    //        }
+    //       
+    //    }
+    //}
 
-        Projectile* projectile = projectile = projectileManager.GetProgectile(i);
-        DirectX::XMFLOAT3 Start{ projectile->GetPosition().x,projectile->GetPosition().y + 1,projectile->GetPosition().z };
-        DirectX::XMFLOAT3 End{ projectile->GetPosition().x,projectile->GetPosition().y + 1,projectile->GetPosition().z + projectile->GetAdjustPos() };
-        if (StageManager::Instance().RayCast(Start, End, hit))
-        {
-            int a = 0;
-            // normal = hit.normal;
-             //地面に接地している
-             /*position = hit.position;
-             angle.y += hit.rotation.y;*/
-             //傾斜率の計算
-           /*  float normalLengthZ = sqrtf(hit.normal.x * hit.normal.x + hit.normal.z * hit.normal.z);
-             slopeRate = 1.0f - (hit.normal.y / (normalLengthZ + hit.normal.y));*/
-             //着地した
-
-        }
-    }
-#else
-    EnemyManager& enemyManager = EnemyManager::Instance();
-    //すべての弾丸と全ての敵を総当たりで衝突判定
-    int progectileCount = projectileManager.GetProjectileCount();
-    int enemyCount = enemyManager.GetEnemyCount();
-    HitResult hit;
-    for (int i = 0; i < progectileCount; ++i)
-    {
-        Projectile* projectile = projectile = projectileManager.GetProgectile(i);
-        DirectX::XMFLOAT3 Start{ projectile->GetPosition() };
-        DirectX::XMFLOAT3 End{ projectile->GetPosition().x,projectile->GetPosition().y,projectile->GetPosition().z + projectile->GetAdjustPos() };
-        for (int j = 0; j < enemyCount; j++)
-        {
-            Enemy* enemy = enemyManager.GetEnemy(j);
-            //衝突判定
-            DirectX::XMFLOAT3 outPosition;
-            if (Collision::InstersectRayVsModel(Start, End, enemy->GetCharacterModel(), hit))
-            {
-                SetMaterialNum(hit.materialIndex);
-                //ダメージを与える
-                if (enemy->ApplyDamage(1, 0.5f))
-                {
-                    projectile->Destroy();
-                }
-            }
-            else
-            {
-
-            }
-        }
-    }
-#endif
 }

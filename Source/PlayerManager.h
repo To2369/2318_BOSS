@@ -4,6 +4,7 @@
 #include <vector>
 #include <DirectXMath.h>
 #include"CameraController.h"
+
 using namespace std;
 
 class PlayerManager
@@ -15,7 +16,7 @@ public:
         return ins;
 
     }
-    void Update(float elapsedTime, CameraController cameraCotrol);
+    void Update(float elapsedTime, CameraController cameraCotrol,FierdBuff&FB);
     void Render(ID3D11DeviceContext* dc, Shader* shader);
     void clear();
     void Remove(player* pl);

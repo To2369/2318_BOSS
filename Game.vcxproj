@@ -126,6 +126,7 @@
     <ClInclude Include="Source\enemy.h" />
     <ClInclude Include="Source\EnemyManager.h" />
     <ClInclude Include="Source\enemySlaime.h" />
+    <ClInclude Include="Source\FierdBuff.h" />
     <ClInclude Include="Source\Framework.h" />
     <ClInclude Include="Source\Graphics\DebugRenderer.h" />
     <ClInclude Include="Source\Graphics\Graphics.h" />
@@ -180,6 +181,7 @@
     <ClCompile Include="Source\enemy.cpp" />
     <ClCompile Include="Source\enemyManager.cpp" />
     <ClCompile Include="Source\enemySlaime.cpp" />
+    <ClCompile Include="Source\FierdBuff.cpp" />
     <ClCompile Include="Source\Framework.cpp" />
     <ClCompile Include="Source\Graphics\DebugRenderer.cpp" />
     <ClCompile Include="Source\Graphics\Graphics.cpp" />

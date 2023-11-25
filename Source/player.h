@@ -8,6 +8,7 @@
 #include"CameraController.h"
 #include<vector>
 #include <cstdlib>
+#include"FierdBuff.h"
 #define MaxRandom10 66
 #define MaxRandom09 55
 #define MaxRandom08 45
@@ -52,7 +53,7 @@ public:
     player();
     ~player()override;
     //更新処理
-    void Update(float elapsedTime, CameraController cameraCotrol);
+    void Update(float elapsedTime, CameraController cameraCotrol,FierdBuff&FB);
     //弾丸と敵の衝突判定
     void ColiisionProjectileVsMato();
     //デバッグ用GUI描画
@@ -78,6 +79,8 @@ public://Set関数
     void SetRadiusSpeed(float sp) { radiusSpeed = sp; }
     void SetRandomPos(DirectX::XMFLOAT2 pos) { randomPos = pos; }
     void SetProjectileSpeed(float speed) { projectileSpeed = speed; }
+    void Setmagnification(int num) { magnification_P = num; }
+
 public: //Get関数
     DirectX::XMFLOAT2 GetRandomPos() { return randomPos; }
     //今現在どのランダム配列を使用してるか
@@ -114,11 +117,11 @@ public: //Get関数
     char* GetNodename(PlayerNodeName name) { return NodeName[name]; }
     ProjectileManager& GetProjectileM() { return projectileManager; }
     int GetMaterialNum(int index) { return ma.at(index); }
-    int GetMaterialCount() { return ma.size(); }
+    int GetMaterialCount() { return static_cast<int>(ma.size()); }
     //弾の向き設定Debug用
     DirectX::XMFLOAT3 GetDirection_P() { return dirc; }
     float GetProjectileSpeed() { return projectileSpeed; }
-    
+    int Getmagnification() {return  magnification_P; }
 public:
     void DebugMaterialClear(bool& flag) {
 
@@ -142,7 +145,7 @@ private:
 
     //移動ステート
     void TransitionAttackState();
-    void UpdateAttackState(float elapsedTime, CameraController camera);
+    void UpdateAttackState(float elapsedTime, CameraController camera,FierdBuff&FB);
     void TransitionAimState();
     void UpateAimState(float elapsedTime);
     void TransitionMOveState();
@@ -562,9 +565,12 @@ private:
 
     std::vector<int> ma;
     State state = State::Idle;
-    float randP = 0;
+    int randP = 0;
     float radiusSpeed;
     DirectX::XMFLOAT3 dirc;
     float projectileSpeed = 0;///弾のスピード
     DirectX::XMFLOAT2 randomPos;
+    int magnification_P=0;
+   
+   
 };
