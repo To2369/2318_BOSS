@@ -26,7 +26,7 @@ public:
 		float angle,
 		float R, float G, float B, float A);
 	// 描画実行
-	void Render(ID3D11DeviceContext *dc,
+	void Update(
 		float dx, float dy,
 		float dw, float dh,
 		float sx, float sy,
@@ -39,6 +39,14 @@ public:
 
 	// テクスチャ高さ取得
 	int GetTextureHeight() const { return textureHeight; }
+
+
+	// 頂点バッファの取得
+	const Microsoft::WRL::ComPtr<ID3D11Buffer>& GetVertexBuffer() const { return vertexBuffer; }
+
+	// シェーダーリソースビューの取得
+	const Microsoft::WRL::ComPtr<ID3D11ShaderResourceView>& GetShaderResourceView() const { return shaderResourceView; }
+
 
 private:
 	Microsoft::WRL::ComPtr<ID3D11VertexShader>			vertexShader;

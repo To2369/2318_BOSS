@@ -92,9 +92,9 @@ void ProjectileHoming::Update(float elapsedTime)
     model->UpdateTransform(transform);
 }
 
-void ProjectileHoming::Render(ID3D11DeviceContext* dc, Shader* shader)
+void ProjectileHoming::Render(RenderContext&rc, ModelShader* shader)
 {
-    shader->Draw(dc, model);
+    shader->Draw(rc, model);
 }
 
 void ProjectileHoming::Launch(const DirectX::XMFLOAT3& Direction,

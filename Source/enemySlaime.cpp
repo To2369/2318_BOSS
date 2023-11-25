@@ -70,9 +70,9 @@ void EnemySlime::Update(float elapsedTime)
 }
 
 //•`‰æˆ—
-void EnemySlime::Render(ID3D11DeviceContext* dc, Shader* shader)
+void EnemySlime::Render(RenderContext& rc, ModelShader* shader)
 {
-    shader->Draw(dc, model);
+    shader->Draw(rc, model);
 }
 
 void EnemySlime::OnDead()

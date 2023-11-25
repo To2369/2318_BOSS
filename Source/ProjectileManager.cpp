@@ -36,11 +36,11 @@ void ProjectileManager::Update(float elpsedTime)
 
 }
 
-void ProjectileManager::Render(ID3D11DeviceContext* dc, Shader* shader)
+void ProjectileManager::Render(RenderContext&rc, ModelShader* shader)
 {
     for (Projectile* tama : Projectiles)
     {
-        tama->Render(dc, shader);
+        tama->Render(rc, shader);
     }
 }
 

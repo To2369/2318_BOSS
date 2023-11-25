@@ -16,8 +16,11 @@ public:
         return ins;
 
     }
+
     void Update(float elapsedTime, CameraController cameraCotrol,FierdBuff&FB);
-    void Render(ID3D11DeviceContext* dc, Shader* shader);
+   
+    void Render(RenderContext&rc,ModelShader*shader);
+
     void clear();
     void Remove(player* pl);
     void Register(player* pl) { players.emplace_back(pl); }

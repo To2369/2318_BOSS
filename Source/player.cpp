@@ -551,10 +551,10 @@ void player::UpateAimState(float elapsedTime)
 }
 
 
-void player::Render(ID3D11DeviceContext* dc, Shader* shader)
+void player::Render(RenderContext& rc, ModelShader* shader)
 {
-    shader->Draw(dc, model);
-    projectileManager.Render(dc, shader);
+    shader->Draw(rc, model);
+    projectileManager.Render(rc, shader);
 }
 //デバッグプリミティブ描画
 void player::DarwDebugPrimitive()

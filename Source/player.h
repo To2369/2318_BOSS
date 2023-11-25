@@ -59,7 +59,7 @@ public:
     //デバッグ用GUI描画
     void DrawDebugGUI();
     //描画処理
-    void Render(ID3D11DeviceContext* dc, Shader* shader);
+    void Render(RenderContext&rc, ModelShader* shader);
     //デバッグプリミティブ表示
     void DarwDebugPrimitive();
     //弾丸入力処理

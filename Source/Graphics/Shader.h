@@ -3,20 +3,37 @@
 #include <d3d11.h>
 #include <DirectXMath.h>
 #include "Graphics/RenderContext.h"
+#include "Graphics/Sprite.h"
 #include "Graphics/Model.h"
 
-class Shader
+class ModelShader
 {
 public:
-	Shader() {}
-	virtual ~Shader() {}
+	ModelShader() {}
+	virtual ~ModelShader() {}
 
 	// ï`âÊäJén
-	virtual void Begin(ID3D11DeviceContext* dc, const RenderContext& rc) = 0;
+	virtual void Begin(const RenderContext& rc) = 0;
 
 	// ï`âÊ
-	virtual void Draw(ID3D11DeviceContext* dc, const Model* model) = 0;
+	virtual void Draw(const RenderContext& rc, const Model* model) = 0;
 
 	// ï`âÊèIóπ
-	virtual void End(ID3D11DeviceContext* context) = 0;
+	virtual void End(const RenderContext& rc) = 0;
+};
+
+class SpriteShader
+{
+public:
+	SpriteShader() {}
+	virtual ~SpriteShader() {}
+
+	// ï`âÊäJén
+	virtual void Begin(const RenderContext& rc) = 0;
+
+	// ï`âÊ
+	virtual void Draw(const RenderContext& rc, const Sprite* model) = 0;
+
+	// ï`âÊèIóπ
+	virtual void End(const RenderContext& rc) = 0;
 };

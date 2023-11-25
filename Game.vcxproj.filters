@@ -201,10 +201,20 @@
     <ClInclude Include="Source\PlayerManager.h">
       <Filter>Source\Manager関連\ヘッダー</Filter>
     </ClInclude>
+<<<<<<< HEAD
     <ClInclude Include="Source\parameter.h">
       <Filter>Source\ヘッダー</Filter>
     </ClInclude>
     <ClInclude Include="Source\FierdBuff.h">
+=======
+    <ClInclude Include="Source\Graphics\MaskShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\Graphics\DefaultSpriteShader.h">
+      <Filter>Source\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\EnemyBoss.h">
+>>>>>>> 58abf514ec64b53f864d5bd0803ac516e66ec7fc
       <Filter>Source\ヘッダー</Filter>
     </ClInclude>
   </ItemGroup>
@@ -350,7 +360,17 @@
     <ClCompile Include="Source\PlayerManager.cpp">
       <Filter>Source\Manager関連\ソース</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="Source\FierdBuff.cpp">
+=======
+    <ClCompile Include="Source\Graphics\MaskShader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\Graphics\DefaultSpriteShader.cpp">
+      <Filter>Source\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="Source\EnemyBoss.cpp">
+>>>>>>> 58abf514ec64b53f864d5bd0803ac516e66ec7fc
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -16,7 +16,7 @@ public:
     virtual void Update(float elpsedTime) = 0;
 
     //描画処理
-    virtual void Render(ID3D11DeviceContext* dc, Shader* shader) = 0;
+    virtual void Render(RenderContext& rc, ModelShader* shader) = 0;
 
     //デバッグプリミティブ描画
     virtual void DrawdebugPrimitive();

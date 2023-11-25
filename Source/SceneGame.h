@@ -39,6 +39,9 @@ private:
 		const DirectX::XMFLOAT4X4& projection
 	);
 
+	//エネミーHPゲージ更新処理
+	void RenderEnemyGaugeUpdate();
+
 	StageMain* stageMain = nullptr;
 	Sprite* gauge = nullptr;
 	player* player_ = nullptr;

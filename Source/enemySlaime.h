@@ -15,7 +15,7 @@ public:
     //XVˆ—
     void Update(float elpsedTime)override;
     //•`‰æˆ—
-    void Render(ID3D11DeviceContext* dc, Shader* shader)override;
+    void Render(RenderContext& rc, ModelShader* shader)override;
     void OnDamege()override;
     //€–S‚µ‚½‚Æ‚«‚ÉŒÄ‚Î‚ê‚é
     void OnDead()override;

@@ -45,11 +45,10 @@ void StageMoveFloor::Update(float elapsedTime)
     model->UpdateTransform(transformIdentity);
 }
 
-void StageMoveFloor::Render(ID3D11DeviceContext* device, Shader* shader)
+void StageMoveFloor::Render(RenderContext&rc, ModelShader* shader)
 {
     model->UpdateTransform(TransForm);
-    shader->Draw(device, model);
-
+    shader->Draw(rc, model);
 }
 
 bool StageMoveFloor::RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& Hit)

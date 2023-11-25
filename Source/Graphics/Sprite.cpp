@@ -252,7 +252,7 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
 	float r = Pos.x + weight / 2.0f;
 	float b = Pos.y - height / 2.0f;
 
-	Render(immediate_context,
+	Update(
 		l, t,
 		r - l, b - t,
 		sx, sy,
@@ -261,7 +261,7 @@ void Sprite::Render(ID3D11DeviceContext* immediate_context,
 		R, G, B, A);
 }
 // 描画実行
-void Sprite::Render(ID3D11DeviceContext *immediate_context,
+void Sprite::Update(
 	float dx, float dy,
 	float dw, float dh,
 	float sx, float sy,
@@ -269,6 +269,8 @@ void Sprite::Render(ID3D11DeviceContext *immediate_context,
 	float angle,
 	float r, float g, float b, float a) const
 {
+	ID3D11DeviceContext* immediate_context = Graphics::Instance().GetDeviceContext();
+
 	{
 		// 現在設定されているビューポートからスクリーンサイズを取得する。
 		D3D11_VIEWPORT viewport;
@@ -355,26 +357,6 @@ void Sprite::Render(ID3D11DeviceContext *immediate_context,
 
 		// 頂点バッファの内容の編集を終了する。
 		immediate_context->Unmap(vertexBuffer.Get(), 0);
-	}
-
-	{
-		// パイプライン設定
-		UINT stride = sizeof(Vertex);
-		UINT offset = 0;
-		immediate_context->IASetVertexBuffers(0, 1, vertexBuffer.GetAddressOf(), &stride, &offset);
-		immediate_context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-		immediate_context->IASetInputLayout(inputLayout.Get());
-
-		immediate_context->RSSetState(rasterizerState.Get());
-
-		immediate_context->VSSetShader(vertexShader.Get(), nullptr, 0);
-		immediate_context->PSSetShader(pixelShader.Get(), nullptr, 0);
-
-		immediate_context->PSSetShaderResources(0, 1, shaderResourceView.GetAddressOf());
-		immediate_context->PSSetSamplers(0, 1, samplerState.GetAddressOf());
-
-		// 描画
-		immediate_context->Draw(4, 0);
 	}
 }
 

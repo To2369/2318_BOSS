@@ -1,5 +1,7 @@
 #include "Misc.h"
 #include "Graphics/LambertShader.h"
+#include "Graphics/DefaultSpriteShader.h"
+#include "Graphics/MaskShader.h"
 #include "Graphics/Graphics.h"
 
 Graphics* Graphics::instance = nullptr;
@@ -128,9 +130,15 @@ Graphics::Graphics(HWND hWnd)
 		immediateContext->RSSetViewports(1, &viewport);
 	}
 
-	// シェーダー
+	// モデルシェーダー
 	{
-		shader = std::make_unique<LambertShader>(device.Get());
+		modelShaders[static_cast<int>(ModelShaderId::Default)] = std::make_unique<LambertShader>(device.Get());
+	}
+
+	// スプライトシェーダー
+	{
+		spriteShaders[static_cast<int>(SpriteShaderId::Default)] = std::make_unique<DefaultSpriteShader>(device.Get());
+		//spriteShaders[static_cast<int>(SpriteShaderId::Mask)] = std::make_unique<MaskShader>(device.Get());
 	}
 
 	// レンダラ

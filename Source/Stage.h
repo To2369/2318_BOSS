@@ -8,8 +8,9 @@ public:
     Stage() {};
     virtual~Stage() {};
 public:
+
     virtual void Update(float elapsedTime) = 0;
-    virtual void Render(ID3D11DeviceContext* dc, Shader* shader) = 0;
+    virtual void Render(RenderContext& rc, ModelShader* shader) = 0;
     virtual bool RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& Hit) = 0;
 protected:
     void UpdateTransform();
@@ -21,6 +22,9 @@ protected:
         1,0,0,0,//‰E•ûŒü
         0,1,0,0,//ã•ûŒü
         0,0,1,0,//‘O•ûŒü
+
+   
+
 
         0,0,0,1//ˆÊ’u
     };

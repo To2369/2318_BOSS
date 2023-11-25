@@ -38,6 +38,18 @@ void SceneLoading::Update(float elapsedTime)
        nextscene = nullptr;
     }
     
+    float screenWidth = static_cast<float>(Graphics::Instance().GetScreenWidth());
+    float screenHeight = static_cast<float>(Graphics::Instance().GetScreenHeight());
+    float textureWidth = static_cast<float>(sprite->GetTextureWidth());
+    float textureHeight = static_cast<float>(sprite->GetTextureHeight());
+    float positionX = screenWidth - textureWidth;
+    float positionY = screenHeight - textureHeight;
+
+    sprite->Update(
+        positionX, positionY, textureWidth, textureHeight,
+        0, 0, textureWidth, textureHeight,
+        angle,
+        1, 1, 1, 1);
 }
 
 void SceneLoading::Render()
@@ -51,19 +63,15 @@ void SceneLoading::Render()
     dc->ClearRenderTargetView(rtv, color);
     dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     dc->OMSetRenderTargets(1, &rtv, dsv);
-    {
-        float screenWidth = static_cast<float>(graphics.GetScreenWidth());
-        float screenHeight = static_cast<float>(graphics.GetScreenHeight());
-        float textureWidth = static_cast<float>(sprite->GetTextureWidth());
-        float textureHeight = static_cast<float>(sprite->GetTextureHeight());
-        float positionX = screenWidth - textureWidth;
-        float positionY = screenHeight - textureHeight;
 
-        sprite->Render(dc,
-            positionX, positionY, textureWidth, textureHeight,
-            0, 0, textureWidth, textureHeight,
-            angle,
-            1, 1, 1, 1);
+    RenderContext rc;
+    rc.deviceContext = graphics.GetDeviceContext();
+
+    {
+        SpriteShader* shader = graphics.GetShader(SpriteShaderId::Default);
+        shader->Begin(rc);
+        shader->Draw(rc, sprite);
+        shader->End(rc);
     }
 }
 
