@@ -32,7 +32,7 @@ void EnemySlime::OnDamege()
 {
     TransitionDamegeState();
 }
-void EnemySlime::Update(float elapsedTime)
+void EnemySlime::Update(float elapsedTime,FierdBuff&FB)
 {
     switch(state)
     {

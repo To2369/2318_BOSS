@@ -13,7 +13,7 @@ public:
     //速力更新処理
    
     //更新処理
-    void Update(float elpsedTime)override;
+    void Update(float elpsedTime, FierdBuff& FB)override;
     //描画処理
     void Render(RenderContext& rc, ModelShader* shader)override;
     void OnDamege()override;
