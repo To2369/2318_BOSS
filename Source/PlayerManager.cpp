@@ -163,6 +163,8 @@ void PlayerManager::DrawDebugGUI()
                 {
                     int bairitu = pl->Getmagnification();
                     ImGui::InputInt("bairitu", &bairitu);
+                    int damage = pl->GetDamageZone();
+                    ImGui::InputInt("damage", &damage);
                 }
                
             }

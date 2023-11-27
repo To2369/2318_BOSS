@@ -80,7 +80,7 @@ public://Set関数
     void SetRandomPos(DirectX::XMFLOAT2 pos) { randomPos = pos; }
     void SetProjectileSpeed(float speed) { projectileSpeed = speed; }
     void Setmagnification(int num) { magnification_P = num; }
-
+    void SetDamageZone(int dam) { DamageZone = dam; }
 public: //Get関数
     DirectX::XMFLOAT2 GetRandomPos() { return randomPos; }
     //今現在どのランダム配列を使用してるか
@@ -122,6 +122,7 @@ public: //Get関数
     DirectX::XMFLOAT3 GetDirection_P() { return dirc; }
     float GetProjectileSpeed() { return projectileSpeed; }
     int Getmagnification() {return  magnification_P; }
+    int GetDamageZone() { return DamageZone; }
 public:
     void DebugMaterialClear(bool& flag) {
 
@@ -571,6 +572,6 @@ private:
     float projectileSpeed = 0;///弾のスピード
     DirectX::XMFLOAT2 randomPos;
     int magnification_P=0;
-   
+    int DamageZone = 0;
    
 };
