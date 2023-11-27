@@ -11,6 +11,16 @@ enum class magnificationPanelState
 	State1,
 	State2,
 };
+
+enum class DamagePanelState
+{
+	Idle,
+	Attack0,
+	Attack1,
+	Attack2,
+	Attack3,
+};
+
 class FierdBuff
 {
 public:
@@ -24,6 +34,7 @@ public:
 	void primitive();
 	void Update(float elapsedTime);
 	bool playerisFierdBuffNow(DirectX::XMFLOAT3 old_pos, DirectX::XMFLOAT3 next_pos);//ç°playerÇ™à íuÇ™ÉoÉtå¯â îÕàÕì‡Ç©Ç«Ç§Ç©
+	bool EnemyisFierdDamageNow(DirectX::XMFLOAT3 old_pos, DirectX::XMFLOAT3 next_pos);
 public://Set
 	void SetNumber(DirectX::XMFLOAT2 num) { number_ = num; }
 	
@@ -32,13 +43,20 @@ public://Set
 		state = st;
 	}
 
+	void SetDamagePanel(DamagePanelState dPanel, int i, int j);
+	void SetDamagePanelState(DamagePanelState dpState) {
+		damagepanelState = dpState;
+	}
 public://Get
 	void buff(magnificationPanelState panel,int i,int j,int&mag);
+	void damagePanelZone(DamagePanelState dpS, int i, int j, int&damage);
 	DirectX::XMFLOAT2 GetNumber() {return number_;}
 	magnificationPanelState GetBuffPanelState() { return state; }
+	DamagePanelState GetDamagePanelState() { return damagepanelState; }
 	std::string GetStateName();
 private:
 	magnificationPanelState state= magnificationPanelState::State1;
+	DamagePanelState damagepanelState = DamagePanelState::Idle;
 	DirectX::XMFLOAT3 Pos{ -17.901f,-0.100,12.505f};
 	DirectX::XMFLOAT3 Buff_Pos{ -14.321f,-0.100,9.995f};
 	float radius=0.5f;
@@ -47,6 +65,4 @@ private:
 	float left2 = 7.16f;
 	float Top2 = -5.02f;
 	DirectX::XMFLOAT2 number_{};
-
-
 };

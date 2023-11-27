@@ -38,6 +38,18 @@ void FierdBuff::primitive()
 		}
 	}
 
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			pos_ = {};
+			pos_.x = Buff_Pos.x + (left2 * j);
+			pos_.z = Buff_Pos.z + (Top2 * i);
+			int damage = 0;
+			damagePanelZone(damagepanelState, i, j, damage);
+			debugRender->DrawSphere(pos_, 1.0f, DirectX::XMFLOAT4{ 0 + (float)damage * 0.2f,0,0,1 });
+		}
+	}
 }
 
 void FierdBuff::Update(float elapsedTime)
@@ -60,6 +72,11 @@ void FierdBuff::Update(float elapsedTime)
 			next_pos.x = Pos.x + (left * (j_ + 1));
 			next_pos.z = Pos.z + (Top * (i_ + 1));
 			
+			if (EnemyisFierdDamageNow(old_pos, next_pos))
+			{
+				SetDamagePanel(damagepanelState, i, j);
+			}
+
 			//ここはプレイヤーの処理だからコピーする必要なし
 			if (playerisFierdBuffNow(old_pos, next_pos))
 			{
@@ -67,19 +84,29 @@ void FierdBuff::Update(float elapsedTime)
 				DirectX::XMFLOAT2 N{j_,i_};
 				number_.x = N.x;
 				number_.y = N.y;
-				
 				break;
 			}
-
-
 		}
 	}
+	
 }
 
 bool FierdBuff::playerisFierdBuffNow(DirectX::XMFLOAT3 old_pos, DirectX::XMFLOAT3 next_pos)
 {
 	player* pl = PlayerManager::Instance().GetPlayer(0);
 	
+	if (pl->GetPosition().x < old_pos.x)return false;
+	if (pl->GetPosition().z > old_pos.z)return false;
+	if (pl->GetPosition().x > next_pos.x)return false;
+	if (pl->GetPosition().z < next_pos.z)return false;
+
+	return true;;
+}
+
+bool FierdBuff::EnemyisFierdDamageNow(DirectX::XMFLOAT3 old_pos, DirectX::XMFLOAT3 next_pos)
+{
+	player* pl = PlayerManager::Instance().GetPlayer(0);
+
 	if (pl->GetPosition().x < old_pos.x)return false;
 	if (pl->GetPosition().z > old_pos.z)return false;
 	if (pl->GetPosition().x > next_pos.x)return false;
@@ -104,7 +131,38 @@ void FierdBuff::SetPanelBuff(magnificationPanelState panel,int i,int j)
 		buff(panel, i, j, mag);
 	pl->Setmagnification(mag);
 		break;
-	
+	}
+}
+
+void FierdBuff::SetDamagePanel(DamagePanelState dPanel, int i, int j)
+{
+	player* pl = PlayerManager::Instance().GetPlayer(0);
+	int dps = 0;
+	switch (dPanel)
+	{
+	case DamagePanelState::Idle:
+		damagePanelZone(dPanel, i, j, dps);
+		pl->SetDamageZone(dps);
+		break;
+	case DamagePanelState::Attack0:
+		damagePanelZone(dPanel, i, j, dps);
+		pl->SetDamageZone(dps);
+		break;
+
+	case DamagePanelState::Attack1:
+		damagePanelZone(dPanel, i, j, dps);
+		pl->SetDamageZone(dps);
+		break;
+
+	case DamagePanelState::Attack2:
+		damagePanelZone(dPanel, i, j, dps);
+		pl->SetDamageZone(dps);
+		break;
+
+	case DamagePanelState::Attack3:
+		damagePanelZone(dPanel, i, j, dps);
+		pl->SetDamageZone(dps);
+		break;
 	}
 }
 
@@ -141,7 +199,6 @@ void FierdBuff::buff(magnificationPanelState panel,int i, int j,int& mag)
 
 		break;
 	}
-	
 }
 
 std::string FierdBuff::GetStateName()
@@ -154,6 +211,87 @@ std::string FierdBuff::GetStateName()
 	case magnificationPanelState::State2:
 		return "State2";
 		break;
-	
+	}
+}
+
+void FierdBuff::damagePanelZone(DamagePanelState dpS, int i, int j, int& damage)
+{
+	switch (dpS)
+	{
+	case DamagePanelState::Idle:
+		damage = 0;
+		break;
+	case DamagePanelState::Attack0:
+		if (j == 2 && i == 0)damage = 10;
+		else if (j == 2 && i == 1)damage=10;
+		else if (j == 0 && i == 2)damage=10;
+		else if (j == 1 && i == 2)damage = 10;
+		else if (j == 2 && i == 2)damage = 10;
+		else if (j == 3 && i == 2)damage = 10;
+		else if (j == 4 && i == 2)damage = 10;
+		else if (j == 2 && i == 3)damage = 10;
+		else if (j == 2 && i == 4)damage = 10;
+		else
+		{
+			damage = 0;
+		}
+		break;
+
+	case DamagePanelState::Attack1:
+		if (j == 0 && i == 0)damage = 10;
+		else if (j == 4 && i == 0)damage = 10;
+		else if (j == 1 && i == 1)damage = 10;
+		else if (j == 3 && i == 1)damage = 10;
+		else if (j == 2 && i == 2)damage = 10;
+		else if (j == 1 && i == 3)damage = 10;
+		else if (j == 3 && i == 3)damage = 10;
+		else if (j == 0 && i == 4)damage = 10;
+		else if (j == 4 && i == 4)damage = 10;
+		else
+		{
+			damage = 0;
+		}
+		break;
+
+	case DamagePanelState::Attack2:
+		if (j == 0 && i == 0)damage = 10;
+		else if (j == 1 && i == 0)damage = 10;
+		else if (j == 2 && i == 0)damage = 10;
+		else if (j == 3 && i == 0)damage = 10;
+		else if (j == 4 && i == 0)damage = 10;
+		else if (j == 0 && i == 2)damage = 10;
+		else if (j == 1 && i == 2)damage = 10;
+		else if (j == 2 && i == 2)damage = 10;
+		else if (j == 3 && i == 2)damage = 10;
+		else if (j == 4 && i == 2)damage = 10;
+		else if (j == 0 && i == 4)damage = 10;
+		else if (j == 1 && i == 4)damage = 10;
+		else if (j == 2 && i == 4)damage = 10;
+		else if (j == 3 && i == 4)damage = 10;
+		else if (j == 4 && i == 4)damage = 10;
+		else
+		{
+			damage = 0;
+		}
+		break;
+
+	case DamagePanelState::Attack3:
+		if (j == 1 && i == 0)damage = 10;
+		else if (j == 2 && i == 0)damage = 10;
+		else if (j == 3 && i == 0)damage = 10;
+		else if (j == 0 && i == 1)damage = 10;
+		else if (j == 4 && i == 1)damage = 10;
+		else if (j == 0 && i == 2)damage = 10;
+		else if (j == 4 && i == 2)damage = 10;
+		else if (j == 0 && i == 3)damage = 10;
+		else if (j == 4 && i == 3)damage = 10;
+		else if (j == 1 && i == 4)damage = 10;
+		else if (j == 2 && i == 4)damage = 10;
+		else if (j == 3 && i == 4)damage = 10;
+		else
+		{
+			damage = 0;
+		}
+		break;
 	}
 }
