@@ -66,6 +66,4 @@ void ScnenTitle::Render()
         shader->Draw(rc, sprite);
         shader->End(rc);
     }
-
-
 }

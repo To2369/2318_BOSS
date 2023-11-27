@@ -36,6 +36,21 @@ public:
 
 		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shaderResourceView;
 
+		struct Phong
+		{
+			DirectX::XMFLOAT4	ka = DirectX::XMFLOAT4(1, 1, 1, 1);
+			DirectX::XMFLOAT4	kd = DirectX::XMFLOAT4(1, 1, 1, 1);
+			DirectX::XMFLOAT4	ks = DirectX::XMFLOAT4(1, 1, 1, 1);
+			float				shiness = 128;
+			Phong() {}
+		} phong;
+
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> diffuse_map;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> normal_map;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> metallic_smoothness_map;
+		Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> ambient_occlusion_map;
+
+
 		template<class Archive>
 		void serialize(Archive& archive, int version);
 	};
@@ -126,6 +141,9 @@ public:
 protected:
 	// モデルセットアップ
 	void BuildModel(ID3D11Device* device, const char* dirname);
+
+	// テクスチャ読み込み
+	HRESULT LoadTexture(ID3D11Device* device, const char* filename, const char* suffix, bool dummy, ID3D11ShaderResourceView** srv, UINT dummy_color = 0xFFFFFFFF);
 
 	// シリアライズ
 	void Serialize(const char* filename);

@@ -8,6 +8,8 @@
 #include"stageMain.h"
 #include"StageManager.h"
 #include"FierdBuff.h"
+#include "Graphics/Light.h"
+
 // ゲームシーン
 class SceneGame :public Scene
 {
@@ -53,4 +55,8 @@ private://追加しもの
 	std::unique_ptr<Sprite>circle = std::make_unique<Sprite>("Data/Sprite/サークル.png");
 	StageManager& stagemanager = StageManager::Instance();
 	std::unique_ptr<FierdBuff>FB;//フィールドバフ
+
+	//平行光源データ
+	std::unique_ptr<Light> directional_light; //平行光源
+	DirectX::XMFLOAT4 ambientLightColor; //環境光色
 };

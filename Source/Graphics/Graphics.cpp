@@ -2,6 +2,7 @@
 #include "Graphics/LambertShader.h"
 #include "Graphics/DefaultSpriteShader.h"
 #include "Graphics/MaskShader.h"
+#include "Graphics/PhongShader.h"
 #include "Graphics/Graphics.h"
 
 Graphics* Graphics::instance = nullptr;
@@ -133,6 +134,7 @@ Graphics::Graphics(HWND hWnd)
 	// モデルシェーダー
 	{
 		modelShaders[static_cast<int>(ModelShaderId::Default)] = std::make_unique<LambertShader>(device.Get());
+		modelShaders[static_cast<int>(ModelShaderId::Phong)] = std::make_unique<PhongShader>(device.Get());
 	}
 
 	// スプライトシェーダー
