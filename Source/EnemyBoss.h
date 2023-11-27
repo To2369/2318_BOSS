@@ -11,7 +11,7 @@ public:
     //速力更新処理
 
     //更新処理
-    void Update(float elpsedTime)override;
+    void Update(float elpsedTime, FierdBuff& FB)override;
     //描画処理
     void Render(RenderContext& rc, ModelShader* shader)override;
     void OnDamege()override;
@@ -25,31 +25,27 @@ public:
     bool SearchPlayer();
 
     void DrawDebugPrimitive()override;
-
 private:
     void CollisionNodeVsPlayer(const char* nodename, float boneRadius);
-
+    void DamageFieldVsPlayer();
 
     void TransitionIdleState();                         //待機ステートへ遷移
     void UpdateIdleState(float elapsedTime);            //待機ステート更新処理
 
-    void TransitionPursuitState();                      //追跡ステートへ遷移
-    void UpdatePursuitState(float elapsedTime);         //追跡ステート更新処理
-
     void TransitionAttack0State();                       //攻撃ステート0へ遷移
-    void UpdateAttack0State(float elapsedTime);          //攻撃ステート0更新処理
+    void UpdateAttack0State(float elapsedTime, FierdBuff& FB);          //攻撃ステート0更新処理
 
     void TransitionAttack1State();                       //攻撃ステート1へ遷移
-    void UpdateAttack1State(float elapsedTime);          //攻撃ステート1更新処理
+    void UpdateAttack1State(float elapsedTime, FierdBuff& FB);          //攻撃ステート1更新処理
 
     void TransitionAttack2State();                       //攻撃ステート2へ遷移
-    void UpdateAttack2State(float elapsedTime);          //攻撃ステート2更新処理
+    void UpdateAttack2State(float elapsedTime, FierdBuff& FB);          //攻撃ステート2更新処理
 
     void TransitionAttack3State();                       //攻撃ステート3へ遷移
-    void UpdateAttack3State(float elapsedTime);          //攻撃ステート3更新処理
+    void UpdateAttack3State(float elapsedTime, FierdBuff& FB);          //攻撃ステート3更新処理
 
     void TransitionBattleIdleState();                   //戦闘待機ステートへ遷移
-    void UpdateBattleIdleState(float elapsedTime);      //戦闘待機ステート更新処理
+    void UpdateBattleIdleState(float elapsedTime, FierdBuff& FB);      //戦闘待機ステート更新処理
 
     void TransitionDamegeState();                       //ダメージステートへ遷移
     void UpdateDamegeState(float elapsedTime);          //ダメージステート更新処理
@@ -60,7 +56,6 @@ private:
     enum class State
     {
         Idle,
-        Pursuit,
         Damege,
         Attack0,
         Attack1,
@@ -68,14 +63,6 @@ private:
         Attack3,
         Death,
         Idle_Battle,
-
-       /* Wander,
-        Idle,
-        Pursuit,
-        Attack,
-        Idle_Battle,
-        Damege,
-        Death*/
     };
     enum  Animation
     {
@@ -108,7 +95,7 @@ private:
     float territoryRange = 10.0f;
     float moveSpeed = 3.0f;
     float turnSpeed = DirectX::XMConvertToRadians(360);
-    float serachRange = 10.0f;                           //索敵範囲
-    float attackRange = 5.0f;                           //攻撃範囲
     int RandomState = 0;
+    float Damage = 1.0f;//攻撃力
+    float InvicivleTimer = 1.0f;//無敵時間
 };

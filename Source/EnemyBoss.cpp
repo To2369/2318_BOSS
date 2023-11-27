@@ -25,30 +25,27 @@ EnemyBoss::~EnemyBoss()
 }
 
 
-void EnemyBoss::Update(float elapsedTime)
+void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
 {
     switch (state)
     {
     case State::Idle:
         UpdateIdleState(elapsedTime);
         break;
-    case State::Pursuit:
-        UpdatePursuitState(elapsedTime);
-        break;
     case State::Attack0:
-        UpdateAttack0State(elapsedTime);
+        UpdateAttack0State(elapsedTime, FB);
         break;
     case State::Attack1:
-        UpdateAttack1State(elapsedTime);
+        UpdateAttack1State(elapsedTime,FB);
         break;
     case State::Attack2:
-        UpdateAttack2State(elapsedTime);
+        UpdateAttack2State(elapsedTime, FB);
         break;
     case State::Attack3:
-        UpdateAttack3State(elapsedTime);
+        UpdateAttack3State(elapsedTime, FB);
         break;
     case State::Idle_Battle:
-        UpdateBattleIdleState(elapsedTime);
+        UpdateBattleIdleState(elapsedTime, FB);
         break;
     case State::Damege:
         UpdateDamegeState(elapsedTime);
@@ -58,7 +55,7 @@ void EnemyBoss::Update(float elapsedTime)
         break;
     }
     //速力更新処理
-    UpdateVelocity(elapsedTime);
+    //UpdateVelocity(elapsedTime);
 
     //無敵時間更新
     UpdateInvincibletime(elapsedTime);
@@ -84,9 +81,6 @@ void EnemyBoss::DrawDebugPrimitive()
     DebugRenderer* debugRnderer = Graphics::Instance().GetDebugRenderer();
     //debugRnderer->DrawCylinder(territoryOrigin, territoryRange, 1.0f, DirectX::XMFLOAT4(0, 1, 0, 1));
     debugRnderer->DrawSphere(targetPositoin, radius, DirectX::XMFLOAT4(1, 1, 0, 1));
-    //索敵距離
-    debugRnderer->DrawCylinder(position, serachRange, 1.0f, DirectX::XMFLOAT4(0, 0, 1, 1));
-    debugRnderer->DrawCylinder(position, attackRange, 1.0f, DirectX::XMFLOAT4(1, 0, 0, 1));
 }
 
 //ノードとプレイヤーの衝突判定
@@ -143,6 +137,16 @@ void EnemyBoss::CollisionNodeVsPlayer(const char* nodename, float boneRadius)
     }
 }
 
+void EnemyBoss::DamageFieldVsPlayer()
+{
+    //プレイヤーと当たり判定
+    player& player = *PlayerManager::Instance().GetPlayer(0);
+    if (player.GetDamageZone() == 10)
+    {
+        player.ApplyDamage(Damage, InvicivleTimer);
+    }
+}
+
 //ダメージを受けたとき
 void EnemyBoss::OnDamege()
 {
@@ -168,34 +172,11 @@ void EnemyBoss::MoveToTarget(float elapsedTime, float speedRate)
     Trun(elapsedTime, vx, vz, turnSpeed * speedRate);
 }
 
-//プレイヤー索敵
-bool EnemyBoss::SearchPlayer()
-{
-    const DirectX::XMFLOAT3& playerPosition = PlayerManager::Instance().GetPlayer(0)->GetPosition();
-    float vx = playerPosition.x - position.x;
-    float vy = playerPosition.y - position.y;
-    float vz = playerPosition.z - position.z;
-    float dist = sqrtf(vx * vx + vy * vy + vz * vz);
-    if (dist < serachRange)
-    {
-        float distXZ = sqrtf(vx * vx + vz * vz);
-        vx /= distXZ;
-        vz /= distXZ;
-        float frontX = sinf(angle.y);
-        float frontY = cosf(angle.y);
-        float dot = (frontX * vx) + (frontY * vy);
-        if (dot > 0.0f)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-
 //待機ステートへ遷移
 void EnemyBoss::TransitionIdleState()
 {
     state = State::Idle;
+    stateTime = Mathf::RandameRange(2.0f, 10.0f);
     model->playAnimetion(Anim_Idle1, true);
 }
 
@@ -203,48 +184,8 @@ void EnemyBoss::TransitionIdleState()
 void EnemyBoss::UpdateIdleState(float elapsedTime)
 {
     stateTime -= elapsedTime;
-    if (SearchPlayer())
-    {
-        //TransitionPursuitState();
-    }
-    targetPositoin = PlayerManager::Instance().GetPlayer(0)->GetPosition();
-    float vx = targetPositoin.x - position.x;
-    float vy = targetPositoin.y - position.y;
-    float vz = targetPositoin.z - position.z;
-    float dist = sqrtf(vx * vx + vy * vy + vz * vz);
-
-    if (dist < attackRange)
-    {
-        TransitionBattleIdleState();
-    }
-}
-
-//追跡ステートへ遷移
-void EnemyBoss::TransitionPursuitState()
-{
-    state = State::Pursuit;
-    stateTime = Mathf::RandameRange(3.0f, 5.0f);
-    model->playAnimetion(Anim_Walk, true);
-}
-
-//追跡ステート更新処理
-void EnemyBoss::UpdatePursuitState(float elapsedTime)
-{
-    targetPositoin = PlayerManager::Instance().GetPlayer(0)->GetPosition();
-    MoveToTarget(elapsedTime, 1.0f);
-    stateTime -= elapsedTime;
+    
     if (stateTime < 0.0f)
-    {
-        TransitionIdleState();
-    }
-
-
-    float vx = targetPositoin.x - position.x;
-    float vy = targetPositoin.y - position.y;
-    float vz = targetPositoin.z - position.z;
-    float dist = sqrtf(vx * vx + vy * vy + vz * vz);
-
-    if (dist < attackRange)
     {
         TransitionBattleIdleState();
     }
@@ -258,27 +199,18 @@ void EnemyBoss::TransitionAttack0State()
 }
 
 //攻撃ステート0更新処理
-void EnemyBoss::UpdateAttack0State(float elapsedTime)
+void EnemyBoss::UpdateAttack0State(float elapsedTime, FierdBuff& FB)
 {
     float animationTime = model->GetCurrentAnimationSeconds();
     if (animationTime >= 0.1f && animationTime <= 1.33f)
     {
-        CollisionNodeVsPlayer("Chest", 1.0f);
-
+        DamageFieldVsPlayer();
     }
     if (!model->IsPlayerAnimetion())
     {
-        float vx = targetPositoin.x - position.x;
-        float vy = targetPositoin.y - position.y;
-        float vz = targetPositoin.z - position.z;
-        float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+        FB.SetDamagePanelState(DamagePanelState::Idle);
 
-        if (dist < attackRange)
-        {
-            TransitionIdleState();
-            return;
-        }
-        TransitionBattleIdleState();
+        TransitionIdleState();
     }
 }
 
@@ -290,27 +222,18 @@ void EnemyBoss::TransitionAttack1State()
 }
 
 //攻撃ステート1更新処理
-void EnemyBoss::UpdateAttack1State(float elapsedTime)
+void EnemyBoss::UpdateAttack1State(float elapsedTime, FierdBuff& FB)
 {
     float animationTime = model->GetCurrentAnimationSeconds();
     if (animationTime >= 0.1f && animationTime <= 1.33f)
     {
-        CollisionNodeVsPlayer("Chest", 1.0f);
-
+        DamageFieldVsPlayer();
     }
     if (!model->IsPlayerAnimetion())
     {
-        float vx = targetPositoin.x - position.x;
-        float vy = targetPositoin.y - position.y;
-        float vz = targetPositoin.z - position.z;
-        float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+        FB.SetDamagePanelState(DamagePanelState::Idle);
 
-        if (dist < attackRange)
-        {
-            TransitionIdleState();
-            return;
-        }
-        TransitionBattleIdleState();
+        TransitionIdleState();
     }
 }
 
@@ -322,27 +245,18 @@ void EnemyBoss::TransitionAttack2State()
 }
 
 //攻撃ステート2更新処理
-void EnemyBoss::UpdateAttack2State(float elapsedTime)
+void EnemyBoss::UpdateAttack2State(float elapsedTime, FierdBuff& FB)
 {
     float animationTime = model->GetCurrentAnimationSeconds();
     if (animationTime >= 0.1f && animationTime <= 1.33f)
     {
-        CollisionNodeVsPlayer("Chest", 1.0f);
-
+        DamageFieldVsPlayer();
     }
     if (!model->IsPlayerAnimetion())
     {
-        float vx = targetPositoin.x - position.x;
-        float vy = targetPositoin.y - position.y;
-        float vz = targetPositoin.z - position.z;
-        float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+        FB.SetDamagePanelState(DamagePanelState::Idle);
 
-        if (dist < attackRange)
-        {
-            TransitionIdleState();
-            return;
-        }
-        TransitionBattleIdleState();
+        TransitionIdleState();
     }
 }
 
@@ -354,27 +268,18 @@ void EnemyBoss::TransitionAttack3State()
 }
 
 //攻撃ステート3更新処理
-void EnemyBoss::UpdateAttack3State(float elapsedTime)
+void EnemyBoss::UpdateAttack3State(float elapsedTime, FierdBuff& FB)
 {
     float animationTime = model->GetCurrentAnimationSeconds();
     if (animationTime >= 0.1f && animationTime <= 1.33f)
     {
-        CollisionNodeVsPlayer("Chest", 1.0f);
-
+        DamageFieldVsPlayer();
     }
     if (!model->IsPlayerAnimetion())
     {
-        float vx = targetPositoin.x - position.x;
-        float vy = targetPositoin.y - position.y;
-        float vz = targetPositoin.z - position.z;
-        float dist = sqrtf(vx * vx + vy * vy + vz * vz);
+        FB.SetDamagePanelState(DamagePanelState::Idle);
 
-        if (dist < attackRange)
-        {
-            TransitionIdleState();
-            return;
-        }
-        TransitionBattleIdleState();
+        TransitionIdleState();
     }
 }
 
@@ -387,7 +292,7 @@ void EnemyBoss::TransitionBattleIdleState()
 }
 
 //戦闘待機ステート更新処理
-void EnemyBoss::UpdateBattleIdleState(float elapsedTime)
+void EnemyBoss::UpdateBattleIdleState(float elapsedTime, FierdBuff& FB)
 {
     if (!model->IsPlayerAnimetion())
     {
@@ -395,13 +300,21 @@ void EnemyBoss::UpdateBattleIdleState(float elapsedTime)
         switch (RandomState)
         {
         case 0:
-            TransitionAttack0State();break;
+            TransitionAttack0State();
+            FB.SetDamagePanelState(DamagePanelState::Attack0); 
+            break;
         case 1:
-            TransitionAttack1State(); break;
+            TransitionAttack1State(); 
+            FB.SetDamagePanelState(DamagePanelState::Attack1); 
+            break;
         case 2:
-            TransitionAttack2State(); break;
+            TransitionAttack2State(); 
+            FB.SetDamagePanelState(DamagePanelState::Attack2); 
+            break;
         case 3:
-            TransitionAttack3State(); break;
+            TransitionAttack3State(); 
+            FB.SetDamagePanelState(DamagePanelState::Attack3); 
+            break;
         }
     }
 }
