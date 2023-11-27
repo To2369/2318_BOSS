@@ -58,6 +58,9 @@ void SceneGame::Initialize()
 
 	//ゲージスプライト
 	gauge = new Sprite;
+
+	directional_light = std::make_unique<Light>(LightType::Directional);
+	ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
 }
 
 // 終了化
@@ -117,6 +120,23 @@ void SceneGame::Update(float elapsedTime)
 	EnemyManager::Instance().Update(elapsedTime);
 	EffectManager::Instance().Update(elapsedTime);
 	RenderEnemyGaugeUpdate();
+
+	float screenWidh = 720;//static_cast<float>(graphics.GetScreenWidth());
+	float screenHeight = static_cast <float>(graphics.GetScreenHeight());
+	float textureWidth = static_cast<float>(circle->GetTextureWidth());
+	float textureHeght = static_cast<float>(circle->GetTextureHeight());
+	if (PlayerManager::Instance().GetPlayer(0)->GetPerspectiveChangeFlag().FPS)
+	{
+
+		DirectX::XMFLOAT2 Pos{ 640,360 };
+		circle->Update(
+			screenWidh, screenHeight,
+			screenWidh * PlayerManager::Instance().GetPlayer(0)->GetCircleRadius(),
+			screenHeight * PlayerManager::Instance().GetPlayer(0)->GetCircleRadius(),
+			0, 0,
+			textureWidth, textureHeght, 0,
+			1, 1, 1, 1);
+	}
 }
 
 // 描画処理
@@ -136,16 +156,26 @@ void SceneGame::Render()
 	// 描画処理
 	RenderContext rc;
 	rc.deviceContext = dc;
+	rc.ambientLightColor = ambientLightColor;
+	rc.directionalLightData.direction.x = directional_light->GetDirection().x;
+	rc.directionalLightData.direction.y = directional_light->GetDirection().y;
+	rc.directionalLightData.direction.z = directional_light->GetDirection().z;
+	rc.directionalLightData.direction.w = 0;
+	rc.directionalLightData.color = directional_light->GetColor();
 	rc.lightDirection = { 0.0f, -1.0f, 0.0f, 0.0f };	// ライト方向（下方向）
 
 	//カメラパラメータ設定
 	Camera& camera = Camera::instance();
+	rc.viewPosition.x = camera.GetEye().x;
+	rc.viewPosition.y = camera.GetEye().y;
+	rc.viewPosition.z = camera.GetEye().z;
+	rc.viewPosition.w = 1;
 	rc.view = camera.GetView();
 	rc.projection = camera.GetProjection();
 
 	// 3Dモデル描画
 	{
-		ModelShader* shader = graphics.GetShader(ModelShaderId::Default);
+		ModelShader* shader = graphics.GetShader(ModelShaderId::Phong);
 		shader->Begin(rc);
 		//ステージ描画
 		StageManager::Instance().Render(rc, shader);
@@ -172,23 +202,6 @@ void SceneGame::Render()
 	}
 	// 2Dスプライト描画
 	{
-
-		float screenWidh = 720;//static_cast<float>(graphics.GetScreenWidth());
-		float screenHeight = static_cast <float>(graphics.GetScreenHeight());
-		float textureWidth = static_cast<float>(circle->GetTextureWidth());
-		float textureHeght = static_cast<float>(circle->GetTextureHeight());
-		if (pl->GetPerspectiveChangeFlag().FPS)
-		{
-
-			DirectX::XMFLOAT2 Pos{ 640,360 };
-			circle->Render(dc,
-				Pos,
-				screenWidh * pl->GetCircleRadius(),
-				screenHeight * pl->GetCircleRadius(),
-				0, 0,
-				textureWidth, textureHeght, 0,
-				1, 1, 1, 1);
-		}
 		//RenderEnemyGauge(textureHeghtdc, rc.view, rc.projection);
 
 		SpriteShader* shader = graphics.GetShader(SpriteShaderId::Default);
@@ -207,6 +220,8 @@ void SceneGame::Render()
 		//cameraController_->DrawDebugGUI();
 		//EnemyManager::Instance().DrawDebugGUI();
 		DrawDebugGui();
+		
+		directional_light->DrawDebugGUI();
 	}
 }
 
@@ -232,11 +247,26 @@ void SceneGame::DrawDebugGui()
 			ImGui::InputFloat("FierdPosX", &fb.x);
 			ImGui::InputFloat("FierdPosY", &fb.y);
 			ImGui::Text("state:%s", FB->GetStateName().c_str());
-
 		}
-
-
 	}
+
+	ImGui::End();
+	
+	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+
+	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
+
+	if (ImGui::Begin("Shader", nullptr, ImGuiWindowFlags_None))
+	{
+		if (ImGui::TreeNode("phong"))
+		{
+			ImGui::ColorEdit4("Ambient Light Color", &ambientLightColor.x);
+			ImGui::TreePop();
+		}
+	}
+
 	ImGui::End();
 
 }

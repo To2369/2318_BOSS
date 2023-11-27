@@ -12,6 +12,7 @@
 enum class ModelShaderId
 {
 	Default,
+	Phong,
 
 	Max
 };
