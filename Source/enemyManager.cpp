@@ -2,17 +2,17 @@
 #include"Graphics/Graphics.h"
 #include"collision.h"
 #include"enemySlaime.h"
-
+#include"EnemyBoss.h"
 void EnemyManager::Remove(Enemy* enemy)
 {
     removes.insert(enemy);
 }
 //XVˆ—
-void EnemyManager::Update(float elapsedTime)
+void EnemyManager::Update(float elapsedTime,FierdBuff& FB)
 {
     for (Enemy* enemy : enemies)
     {
-        enemy->Update(elapsedTime);
+        enemy->Update(elapsedTime,FB);
        
     }
     for (Enemy* enemy : removes)
@@ -114,6 +114,7 @@ void EnemyManager::DrawDebugGUI()
             {
 
                 EnemyManager& enemy = EnemyManager::Instance();
+                
                 //ˆÊ’u
                 DirectX::XMFLOAT3 E = enemy.GetEnemy(i)->GetPosition();
                 float H = enemy.GetEnemy(i)->GetHealth();
@@ -121,7 +122,8 @@ void EnemyManager::DrawDebugGUI()
                 ImGui::InputFloat("HP", &H);
                 float timme = enemy.GetEnemy(i)->GetTimer();
                 ImGui::InputFloat("timme", &timme);
-              
+                
+                
             }
         }
     }

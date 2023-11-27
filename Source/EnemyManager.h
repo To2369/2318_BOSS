@@ -18,7 +18,7 @@ public:
     //エネミー削除
     void Remove(Enemy* enemy);
     //更新処理
-    void Update(float elpsedTime);
+    void Update(float elpsedTime,FierdBuff&FB);
     //描画処理
     void Render(RenderContext& rc, ModelShader* shader);
     //エネミーの登録

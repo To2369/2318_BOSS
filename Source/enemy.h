@@ -2,6 +2,7 @@
 
 #include"Graphics/Shader.h"
 #include"character.h"
+#include"FierdBuff.h"
 
 class Enemy :public Character
 {
@@ -12,7 +13,7 @@ public:
     void Destroy();
     
     //XVˆ—
-    virtual void Update(float elapsedTime)=0;
+    virtual void Update(float elapsedTime, FierdBuff& FB)=0;
     //•`‰æ
     virtual void Render(RenderContext& rc, ModelShader* shader)=0;
     //
