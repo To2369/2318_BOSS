@@ -35,14 +35,15 @@ void SceneGame::Initialize()
 	for (int i = 0; i < 1; ++i)
 	{
 
-		EnemySlime* slime = new EnemySlime;
+		/*EnemySlime* slime = new EnemySlime;
 		slime->SetPosition(DirectX::XMFLOAT3(i * 2.0f, 0, 5));
 		slime->SetTerritory(slime->GetPosition(), 10.0f);
-		enemyManager.Register(slime);
+		enemyManager.Register(slime);*/
 
 	}
 	EnemyBoss* boss = new EnemyBoss;
-	boss->SetPosition(DirectX::XMFLOAT3(2.0f, 0, 5));
+	boss->SetPosition(DirectX::XMFLOAT3(0.0f, 0, 15));
+	boss->SetAngle(DirectX::XMFLOAT3(0.0f, 9.5f, 0.0f));
 	enemyManager.Register(boss);
 	//todo:ƒJƒƒ‰‰ŠúÝ’è
 
@@ -63,8 +64,6 @@ void SceneGame::Initialize()
 // I—¹‰»
 void SceneGame::Finalize()
 {
-
-
 	if (cameraController_ != nullptr)
 	{
 		delete cameraController_;
@@ -114,7 +113,7 @@ void SceneGame::Update(float elapsedTime)
 	PlayerManager::Instance().Update(elapsedTime, *cameraController_,*FB);
 	
 	FB->Update(elapsedTime);
-	EnemyManager::Instance().Update(elapsedTime);
+	EnemyManager::Instance().Update(elapsedTime,*FB);
 	EffectManager::Instance().Update(elapsedTime);
 	RenderEnemyGaugeUpdate();
 }
@@ -232,7 +231,6 @@ void SceneGame::DrawDebugGui()
 			ImGui::InputFloat("FierdPosX", &fb.x);
 			ImGui::InputFloat("FierdPosY", &fb.y);
 			ImGui::Text("state:%s", FB->GetStateName().c_str());
-
 		}
 
 
