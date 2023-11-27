@@ -4,6 +4,8 @@
 #include"player.h"
 #include"collision.h"
 #include"PlayerManager.h"
+#include"SceneManager.h"
+#include"SceneClear.h"
 //コンストラクタ
 EnemyBoss::EnemyBoss()
 {
@@ -16,6 +18,7 @@ EnemyBoss::EnemyBoss()
     health = 30000;
     TransitionIdleState();
     srand(time(NULL));
+    DeathFlag = false;
 }
 
 //デストラクタ
@@ -66,6 +69,11 @@ void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
     model->UpdateAnimation(elapsedTime);
     //モデル行列更新
     model->UpdateTransform(transform);
+
+    if (DeathFlag == true)
+    {
+        SceneManager::Instance().ChangeScene(new SceneClear);
+    }
 }
 
 //描画処理
@@ -348,5 +356,6 @@ void EnemyBoss::UpdateDeathState(float elapsedTime)
     if (!model->IsPlayerAnimetion())
     {
         Destroy();
+        DeathFlag = true;
     }
 }

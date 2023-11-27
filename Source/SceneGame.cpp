@@ -13,6 +13,8 @@
 #include"StageMoveFloor.h"
 #include"PlayerManager.h"
 #include"parameter.h"
+#include"SceneManager.h"
+#include"SceneTitle.h"
 // èâä˙âª
 using namespace Debugparam;
 static DirectX::XMFLOAT2 Spritecenter{};
@@ -135,6 +137,13 @@ void SceneGame::Update(float elapsedTime)
 			0, 0,
 			textureWidth, textureHeght, 0,
 			1, 1, 1, 1);
+	}
+
+	GamePad& gamePad = Input::Instance().GetGamePad();
+	const GamePadButton anyButton = GamePad::BTN_A | GamePad::BTN_B;
+	if (gamePad.GetButtonDown() & anyButton)
+	{
+		SceneManager::Instance().ChangeScene(new ScnenTitle);
 	}
 }
 

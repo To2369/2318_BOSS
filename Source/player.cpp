@@ -11,6 +11,8 @@
 #include<string>
 #include "StageManager.h"
 #include"parameter.h"
+#include"SceneManager.h"
+#include"SceneOver.h"
 
 float player::accele;
 float player::furic;
@@ -29,6 +31,7 @@ player::player()
     invincibleTime_ = 0.0f;
     attackCollisionFlag = false;
     dirc = {};
+    DeathFlag = false;
 }
 player::~player()
 {
@@ -88,7 +91,10 @@ void player::Update(float elapsedTime, CameraController cameraCotrol,FierdBuff&F
     }
     //モデル行列更新
     model->UpdateTransform(transform);
-
+    if (DeathFlag == true)
+    {
+        SceneManager::Instance().ChangeScene(new SceneOver);
+    }
 }
 
 void player::TransitionIdleState()
@@ -277,6 +283,7 @@ void player::TransitionDeathState()
 {
     state = State::Death;
     model->playAnimetion(Anim_Death, false);
+    DeathFlag = true;
 }
 
 void player::UpdateDeathState(float elapsedTime)

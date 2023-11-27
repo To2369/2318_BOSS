@@ -98,4 +98,5 @@ private:
     int RandomState = 0;
     float Damage = 1.0f;//UŒ‚—Í
     float InvicivleTimer = 1.0f;//–³“GŠÔ
+    bool DeathFlag;
 };

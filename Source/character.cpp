@@ -312,6 +312,26 @@ void Character::UpdateHorizontalMove(float elpsedTime)
             }
 
         }
+        else if (position.x < -17.9f)//ステージのプレイヤー移動制限
+        {
+            position.x = -17.89f;
+            position.z += mz;
+        }
+        else if (position.x > 17.9f)
+        {
+            position.x = 17.89f;
+            position.z += mz;
+        }
+        else if (position.z < -12.0f)//ステージのプレイヤー移動制限
+        {
+            position.z = -11.999f;
+            position.x += mx;
+        }
+        else if (position.z > 12.0f)
+        {
+            position.z = 11.999f;
+            position.x += mx;
+        }
         else
         {
             //移動
