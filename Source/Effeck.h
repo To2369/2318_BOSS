@@ -9,7 +9,7 @@ public:
     Effect(const char*filename);
     ~Effect() {};
     //çƒê∂
-    Effekseer::Handle Play(const DirectX::XMFLOAT3& position, float scale = 0.5f);
+    Effekseer::Handle Play(const DirectX::XMFLOAT3& position, DirectX::XMFLOAT3 scale);
     //í‚é~
     void Stop(Effekseer::Handle handle);
     //ç¿ïWê›íË

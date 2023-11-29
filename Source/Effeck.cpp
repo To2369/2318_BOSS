@@ -17,13 +17,13 @@ Effect::Effect(const char* filename)
     effekseerEffect = Effekseer::Effect::Create(effekseerManager, (EFK_CHAR*)utf16Filename);
 }
 
-Effekseer::Handle Effect::Play(const DirectX::XMFLOAT3& position, float scale)
+Effekseer::Handle Effect::Play(const DirectX::XMFLOAT3& position, DirectX::XMFLOAT3 scale)
 {
 
     Effekseer::ManagerRef effekseerManager = EffectManager::Instance().GetEffekseerManager();
     Effekseer::Handle handle = effekseerManager->Play(effekseerEffect, position.x, position.y,position.z);
 
-    effekseerManager->SetScale(handle, scale, scale, scale);
+    effekseerManager->SetScale(handle, scale.x, scale.y, scale.z);
     return handle;
 }
 
