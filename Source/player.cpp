@@ -338,7 +338,7 @@ void player::CollisionNodeVsEnemies(const char* nodename, float nodeRadius)
             {
                 DirectX::XMFLOAT3 e = enemys->GetPosition();
                 e.y += enemys->GetHeight() * 0.5f;
-                HitEffect->Play(e);
+                
             }
 
 
