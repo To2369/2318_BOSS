@@ -23,11 +23,6 @@ EnemySlime::~EnemySlime()
     delete model;
 }
 
-
-
-
-
-
 void EnemySlime::OnDamege()
 {
     TransitionDamegeState();
