@@ -18,16 +18,13 @@ public:
     //死亡したときに呼ばれる
     void OnDead()override;
 
-    //目標地点へ移動
-    void MoveToTarget(float elapsedTime, float speedTate);
-
-    //プレイヤー索敵
-    bool SearchPlayer();
-
     void DrawDebugPrimitive()override;
 private:
     void CollisionNodeVsPlayer(const char* nodename, float boneRadius);
-    void DamageFieldVsPlayer();
+    void DamageFieldVsPlayer(FierdBuff& FB);
+
+    void TransitionFirstAction();                       //一番最初の行動遷移(一度しか使わない)
+    void UpdateFirstActionState(float elapsedTime);     //一番最初の行動更新処理(一度しか使わない)
 
     void TransitionIdleState();                         //待機ステートへ遷移
     void UpdateIdleState(float elapsedTime);            //待機ステート更新処理
@@ -55,6 +52,7 @@ private:
 private:
     enum class State
     {
+        FirstAction,
         Idle,
         Damege,
         Attack0,
@@ -89,14 +87,18 @@ private:
     Model* model = nullptr;
 private:
 
-    State state = State::Idle;
+    State state = State::FirstAction;
     DirectX::XMFLOAT3 targetPositoin{};
     DirectX::XMFLOAT3 territoryOrigin{};
     float territoryRange = 10.0f;
     float moveSpeed = 3.0f;
     float turnSpeed = DirectX::XMConvertToRadians(360);
-    int RandomState = 0;
+    int RandomState = -1;
     float Damage = 1.0f;//攻撃力
-    float InvicivleTimer = 1.0f;//無敵時間
+    float InvicivleTimer = 5.0f;//無敵時間
+    int RandomPanelState = -1;
+    bool RandomCheck = false;//ランダム値を設定できたかどうか
+    DirectX::XMFLOAT2 IdleStateTimer={ 30.0f,40.0f };       //待機ステートから次に遷移するまでの時間
+    DirectX::XMFLOAT2 AttackIdleStateTimer = { 30.0f,40.0f };   //攻撃待機ステートから次に遷移するまでの時間
     bool DeathFlag;
 };
