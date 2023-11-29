@@ -1,5 +1,18 @@
 #include"FierdBuff.h"
 #include"PlayerManager.h"
+#include"EnemyManager.h"
+
+FierdBuff::FierdBuff()
+{
+	EnemyAttackRangeEffect = new Effect("Data/Effect/Boss_AttackSpace.efk");
+	EnemyAttackEffect = new Effect("Data/Effect/Boss_Attack.efk");
+}
+
+FierdBuff::~FierdBuff()
+{
+	delete EnemyAttackEffect;
+	delete EnemyAttackRangeEffect;
+}
 
 void FierdBuff::primitive()
 {
@@ -17,9 +30,7 @@ void FierdBuff::primitive()
 			pos_.x = Pos.x + (left * j);
 			pos_.z =  Pos.z + (Top * i);
 			
-			
 			debugRender->DrawSphere(pos_, radius, DirectX::XMFLOAT4{ 0,0,0,1 });
-			
 
 		}
 	}
@@ -47,6 +58,10 @@ void FierdBuff::primitive()
 			pos_.z = Buff_Pos.z + (Top2 * i);
 			int damage = 0;
 			damagePanelZone(damagepanelState, i, j, damage);
+			if (damage == 10)
+			{
+				EnemyAttackRangeEffect->Play(pos_,EnemyAttackRengeEffectScale);
+			}
 			debugRender->DrawSphere(pos_, 1.0f, DirectX::XMFLOAT4{ 0 + (float)damage * 0.2f,0,0,1 });
 		}
 	}
@@ -293,5 +308,25 @@ void FierdBuff::damagePanelZone(DamagePanelState dpS, int i, int j, int& damage)
 			damage = 0;
 		}
 		break;
+	}
+}
+
+void FierdBuff::FierdAttackEffect()
+{
+	DirectX::XMFLOAT3 pos_{};
+	for (int i = 0; i < 5; i++)
+	{
+		for (int j = 0; j < 5; j++)
+		{
+			pos_ = {};
+			pos_.x = Buff_Pos.x + (left2 * j);
+			pos_.z = Buff_Pos.z + (Top2 * i);
+			int damage = 0;
+			damagePanelZone(damagepanelState, i, j, damage);
+			if (damage == 10)
+			{
+				EnemyAttackEffect->Play(pos_, EnemyAttackEffectScale);
+			}
+		}
 	}
 }

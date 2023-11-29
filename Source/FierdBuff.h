@@ -6,6 +6,7 @@
 #include"Graphics/Graphics.h"
 #include<DirectXMath.h>
 #include<vector>
+#include"Effeck.h"
 enum class magnificationPanelState
 {
 	State1,
@@ -29,8 +30,8 @@ public:
 		static FierdBuff inc_;
 		return inc_;
 	}
-	FierdBuff() {};
-	~FierdBuff() {};
+	FierdBuff() ;
+	~FierdBuff() ;
 	void primitive();
 	void Update(float elapsedTime);
 	bool playerisFierdBuffNow(DirectX::XMFLOAT3 old_pos, DirectX::XMFLOAT3 next_pos);//今playerが位置がバフ効果範囲内かどうか
@@ -54,6 +55,8 @@ public://Get
 	magnificationPanelState GetBuffPanelState() { return state; }
 	DamagePanelState GetDamagePanelState() { return damagepanelState; }
 	std::string GetStateName();
+public:
+	void FierdAttackEffect();
 private:
 	magnificationPanelState state= magnificationPanelState::State1;
 	DamagePanelState damagepanelState = DamagePanelState::Idle;
@@ -65,4 +68,8 @@ private:
 	float left2 = 7.16f;
 	float Top2 = -5.02f;
 	DirectX::XMFLOAT2 number_{};
+	Effect* EnemyAttackRangeEffect = nullptr;
+	Effect* EnemyAttackEffect = nullptr;
+	DirectX::XMFLOAT3 EnemyAttackRengeEffectScale = { 0.47f,0.5f,0.33f };		//攻撃範囲のエフェクトスケール
+	DirectX::XMFLOAT3 EnemyAttackEffectScale = { 0.5f,0.5f,0.5f };					//攻撃のエフェクトスケール
 };
