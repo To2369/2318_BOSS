@@ -107,7 +107,6 @@ void SceneGame::changeCamera(DirectX::XMFLOAT3& target, bool Switch)
 // XVˆ—
 void SceneGame::Update(float elapsedTime)
 {
-
 	static DirectX::XMFLOAT3 target{};
 	frameRateCheck = elapsedTime;
 	changeCamera(target, PlayerManager::Instance().GetPlayer(0)->GetPerspectiveChangeFlag().TPS);
@@ -226,7 +225,7 @@ void SceneGame::Render()
 		stagemanager.GUI();
 		PlayerManager::Instance().DrawDebugGUI();
 		//cameraController_->DrawDebugGUI();
-		//EnemyManager::Instance().DrawDebugGUI();
+		EnemyManager::Instance().DrawDebugGUI();
 		DrawDebugGui();
 		
 		directional_light->DrawDebugGUI();
@@ -235,7 +234,7 @@ void SceneGame::Render()
 
 void SceneGame::DrawDebugGui()
 {
-
+	EnemyManager::Instance().DrawDebugGUI();
 	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
 
