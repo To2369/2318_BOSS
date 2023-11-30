@@ -11,7 +11,7 @@ EnemyBoss::EnemyBoss()
 {
     model = new Model("Data/Model/Boss/Boss.mdl");
     //モデルが大きいのでスケーリング
-    scale.x = scale.y = scale.z = 0.01f;
+    scale.x = scale.y = scale.z = 0.05f;
     //円柱の幅高さ設定
     radius = 1.0f;
     height = 1.0f;

@@ -44,7 +44,7 @@ void SceneGame::Initialize()
 
 	}
 	EnemyBoss* boss = new EnemyBoss;
-	boss->SetPosition(DirectX::XMFLOAT3(0.0f, 0, 15));
+	boss->SetPosition(DirectX::XMFLOAT3(0.0f, -5.0f, 30.0f));
 	boss->SetAngle(DirectX::XMFLOAT3(0.0f, 9.5f, 0.0f));
 	enemyManager.Register(boss);
 	//todo:ƒJƒƒ‰‰Šúİ’è
