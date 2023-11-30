@@ -62,7 +62,6 @@ void FierdBuff::primitive()
 			{
 				EnemyAttackRangeEffect->Play(pos_,EnemyAttackRengeEffectScale);
 			}
-			debugRender->DrawSphere(pos_, 1.0f, DirectX::XMFLOAT4{ 0 + (float)damage * 0.2f,0,0,1 });
 		}
 	}
 }

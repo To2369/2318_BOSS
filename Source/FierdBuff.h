@@ -70,6 +70,6 @@ private:
 	DirectX::XMFLOAT2 number_{};
 	Effect* EnemyAttackRangeEffect = nullptr;
 	Effect* EnemyAttackEffect = nullptr;
-	DirectX::XMFLOAT3 EnemyAttackRengeEffectScale = { 0.47f,0.5f,0.33f };		//攻撃範囲のエフェクトスケール
-	DirectX::XMFLOAT3 EnemyAttackEffectScale = { 0.5f,0.5f,0.5f };					//攻撃のエフェクトスケール
+	DirectX::XMFLOAT3 EnemyAttackRengeEffectScale = { 0.47f,0.1f,0.33f };		//攻撃範囲のエフェクトスケール
+	DirectX::XMFLOAT3 EnemyAttackEffectScale = { 1.0f,0.5f,1.0f };					//攻撃のエフェクトスケール
 };
