@@ -107,14 +107,11 @@ void EnemyManager::DrawDebugGUI()
     {
         //トランスフォーム
         if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen))
-
         {
-            
             for (int i = 0; i < EnemyManager::GetEnemyCount(); i++)
             {
 
                 EnemyManager& enemy = EnemyManager::Instance();
-                
                 //位置
                 DirectX::XMFLOAT3 E = enemy.GetEnemy(i)->GetPosition();
                 float H = enemy.GetEnemy(i)->GetHealth();
@@ -122,8 +119,6 @@ void EnemyManager::DrawDebugGUI()
                 ImGui::InputFloat("HP", &H);
                 float timme = enemy.GetEnemy(i)->GetTimer();
                 ImGui::InputFloat("timme", &timme);
-                
-                
             }
         }
     }
