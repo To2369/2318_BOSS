@@ -114,7 +114,6 @@ void player::UpdateIdleState(float elapsedTime)
     }
     if (InputMove(elapsedTime))
     {
-
         TransitionMOveState();
     }
 
