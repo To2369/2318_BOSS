@@ -19,6 +19,8 @@ public:
     void OnDead()override;
 
     void DrawDebugPrimitive()override;
+
+    void DrawDebugGUI();
 private:
     void CollisionNodeVsPlayer(const char* nodename, float boneRadius);
     void DamageFieldVsPlayer(FierdBuff& FB);
@@ -98,7 +100,7 @@ private:
     float InvicivleTimer = 5.0f;//無敵時間
     int RandomPanelState = -1;
     bool RandomCheck = false;//ランダム値を設定できたかどうか
-    DirectX::XMFLOAT2 IdleStateTimer={ 30.0f,40.0f };       //待機ステートから次に遷移するまでの時間
-    DirectX::XMFLOAT2 AttackIdleStateTimer = { 30.0f,40.0f };   //攻撃待機ステートから次に遷移するまでの時間
+    DirectX::XMFLOAT2 IdleStateTimer={ 5.0f,1.0f };       //待機ステートから次に遷移するまでの時間
+    DirectX::XMFLOAT2 AttackIdleStateTimer = { 5.0f,3.0f };   //攻撃待機ステートから次に遷移するまでの時間			//攻撃のエフェクトスケール
     bool DeathFlag;
 };

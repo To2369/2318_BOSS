@@ -17,7 +17,7 @@ EnemyBoss::EnemyBoss()
     height = 1.0f;
     health = 30000;
     TransitionFirstAction();
-    srand(time(NULL));
+    srand((unsigned int)time(NULL));
     DeathFlag = false;
 }
 
@@ -30,6 +30,10 @@ EnemyBoss::~EnemyBoss()
 
 void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
 {
+    if (stateTime < 0.0f)
+    {
+        stateTime = 0.0f;
+    }
     switch (state)
     {
     case State::FirstAction:
@@ -75,7 +79,7 @@ void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
 
     if (DeathFlag == true)
     {
-        SceneManager::Instance().ChangeScene(new SceneClear);
+        //SceneManager::Instance().ChangeScene(new SceneClear);
     }
 }
 
@@ -93,6 +97,8 @@ void EnemyBoss::DrawDebugPrimitive()
     //debugRnderer->DrawCylinder(territoryOrigin, territoryRange, 1.0f, DirectX::XMFLOAT4(0, 1, 0, 1));
     debugRnderer->DrawSphere(targetPositoin, radius, DirectX::XMFLOAT4(1, 1, 0, 1));
 }
+
+
 
 //ノードとプレイヤーの衝突判定
 void EnemyBoss::CollisionNodeVsPlayer(const char* nodename, float boneRadius)
@@ -150,11 +156,12 @@ void EnemyBoss::CollisionNodeVsPlayer(const char* nodename, float boneRadius)
 
 void EnemyBoss::DamageFieldVsPlayer(FierdBuff& FB)
 {
+
     //プレイヤーと当たり判定
     player& player = *PlayerManager::Instance().GetPlayer(0);
     if (player.GetDamageZone() == 10)
     {
-        //FB.FierdAttackEffect();
+        FB.FierdAttackEffect();
         player.ApplyDamage(Damage, InvicivleTimer);
     }
 }
@@ -192,7 +199,7 @@ void EnemyBoss::UpdateFirstActionState(float elapsedTime)
 void EnemyBoss::TransitionIdleState()
 {
     state = State::Idle;
-    stateTime = Mathf::RandameRange(IdleStateTimer.x, IdleStateTimer.y);
+    stateTime = Mathf::RandameRange2(IdleStateTimer.x, IdleStateTimer.y);
     model->playAnimetion(Anim_Idle1, true);
 }
 
@@ -224,8 +231,9 @@ void EnemyBoss::UpdateAttack0State(float elapsedTime, FierdBuff& FB)
     }
     if (!model->IsPlayerAnimetion())
     {
-        TransitionIdleState();
         FB.SetDamagePanelState(DamagePanelState::Idle);
+
+        TransitionIdleState();
     }
 }
 
@@ -246,9 +254,9 @@ void EnemyBoss::UpdateAttack1State(float elapsedTime, FierdBuff& FB)
     }
     if (!model->IsPlayerAnimetion())
     {
-        TransitionIdleState();
-
         FB.SetDamagePanelState(DamagePanelState::Idle);
+
+        TransitionIdleState();
     }
 }
 
@@ -292,9 +300,9 @@ void EnemyBoss::UpdateAttack3State(float elapsedTime, FierdBuff& FB)
     }
     if (!model->IsPlayerAnimetion())
     {
-        TransitionIdleState();
-
         FB.SetDamagePanelState(DamagePanelState::Idle);
+
+        TransitionIdleState();
     }
 }
 
@@ -304,7 +312,7 @@ void EnemyBoss::TransitionBattleIdleState()
     state = State::Idle_Battle;
     RandomState = (int)Mathf::RandameRange(0.0f, 3.0f);
     RandomPanelState = RandomState;
-    stateTime = Mathf::RandameRange(AttackIdleStateTimer.x, AttackIdleStateTimer.y);
+    stateTime = Mathf::RandameRange2(AttackIdleStateTimer.x, AttackIdleStateTimer.y);
     model->playAnimetion(Anim_Idle2, true);
 }
 
@@ -340,15 +348,16 @@ void EnemyBoss::UpdateBattleIdleState(float elapsedTime, FierdBuff& FB)
             TransitionAttack0State();
             break;
         case 1:
-            TransitionAttack1State(); 
+            TransitionAttack1State();
             break;
         case 2:
-            TransitionAttack2State(); 
+            TransitionAttack2State();
             break;
         case 3:
-            TransitionAttack3State(); 
+            TransitionAttack3State();
             break;
         }
+        
     }
 }
 
