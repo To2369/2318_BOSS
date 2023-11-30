@@ -169,6 +169,7 @@
     <ClInclude Include="Source\stageMain.h" />
     <ClInclude Include="Source\StageManager.h" />
     <ClInclude Include="Source\StageMoveFloor.h" />
+    <ClInclude Include="Source\TargetPoint.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="External\DirectXTex\WICTextureLoader.cpp" />
@@ -226,6 +227,7 @@
     <ClCompile Include="Source\stageMain.cpp" />
     <ClCompile Include="Source\StageManager.cpp" />
     <ClCompile Include="Source\StageMoveFloor.cpp" />
+    <ClCompile Include="Source\TargetPoint.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="HLSL\Debug.hlsli" />
