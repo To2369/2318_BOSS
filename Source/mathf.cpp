@@ -11,3 +11,9 @@ float Mathf::RandameRange(float min, float max)
     
     return rand()%(int)max-min;
 }
+
+float Mathf::RandameRange2(float max, float min)
+{
+
+    return rand() % (int)max + min;
+}
