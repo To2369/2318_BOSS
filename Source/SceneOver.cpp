@@ -69,7 +69,7 @@ void SceneOver::Update(float elpsedTime)
     float positionY = screenHeight - exitHeght;
 
     exit->Update(
-        260, 670, 360, 130,
+        1300, 670, 360, 130,
         0, 0, 242, 92,
         0,
         1, 1, 1, 1);
@@ -80,7 +80,7 @@ void SceneOver::Update(float elpsedTime)
         0,
         1, 1, 1, 1);
     retry->Update(
-        1300, 670, 360, 130,
+        260, 670, 360, 130,
         0, 0, 242, 92,
         0,
         1, 1, 1, 1);

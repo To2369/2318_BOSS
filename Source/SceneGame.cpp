@@ -46,7 +46,7 @@ void SceneGame::Initialize()
 
 	//}
 	EnemyBoss* boss = new EnemyBoss;
-	boss->SetPosition(DirectX::XMFLOAT3(0.0f, 0, 15));
+	boss->SetPosition(DirectX::XMFLOAT3(0.0f, -5.0f, 30.0f));
 	boss->SetAngle(DirectX::XMFLOAT3(0.0f, 9.5f, 0.0f));
 	enemyManager.Register(boss);
 	//todo:カメラ初期設定
@@ -62,7 +62,9 @@ void SceneGame::Initialize()
 		1000.0f);
 
 	//ゲージスプライト
-	gauge = new Sprite;
+	gauge = new Sprite("Data/Sprite/HP.png");
+	//gauge = new Sprite();
+	gaugeback = new Sprite("Data/Sprite/HP_.png");
 
 	directional_light = std::make_unique<Light>(LightType::Directional);
 	ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
@@ -80,6 +82,11 @@ void SceneGame::Finalize()
 	{
 		delete gauge;
 		gauge = nullptr;
+	}
+	if (gaugeback != nullptr)
+	{
+		delete gaugeback;
+		gaugeback = nullptr;
 	}
 	EnemyManager::Instance().Clear();
 	StageManager::Instance().Clear();
@@ -109,7 +116,6 @@ void SceneGame::changeCamera(DirectX::XMFLOAT3& target, bool Switch)
 // 更新処理
 void SceneGame::Update(float elapsedTime)
 {
-
 	static DirectX::XMFLOAT3 target{};
 	frameRateCheck = elapsedTime;
 	changeCamera(target, PlayerManager::Instance().GetPlayer(0)->GetPerspectiveChangeFlag().TPS);
@@ -122,7 +128,6 @@ void SceneGame::Update(float elapsedTime)
 	FB->Update(elapsedTime);
 	EnemyManager::Instance().Update(elapsedTime,*FB);
 	EffectManager::Instance().Update(elapsedTime);
-	RenderEnemyGaugeUpdate();
 
 	float screenWidh = 720;//static_cast<float>(graphics.GetScreenWidth());
 	float screenHeight = static_cast <float>(graphics.GetScreenHeight());
@@ -140,12 +145,11 @@ void SceneGame::Update(float elapsedTime)
 			textureWidth, textureHeght, 0,
 			1, 1, 1, 1);
 	}
-
 	GamePad& gamePad = Input::Instance().GetGamePad();
 	const GamePadButton anyButton = GamePad::BTN_A | GamePad::BTN_B;
 	if (gamePad.GetButtonDown() & anyButton)
 	{
-		SceneManager::Instance().ChangeScene(new ScnenTitle);
+		//SceneManager::Instance().ChangeScene(new ScnenTitle);
 	}
 }
 
@@ -213,14 +217,12 @@ void SceneGame::Render()
 	// 2Dスプライト描画
 	{
 		//RenderEnemyGauge(textureHeghtdc, rc.view, rc.projection);
-
+		RenderEnemyGaugeUpdate();
 		SpriteShader* shader = graphics.GetShader(SpriteShaderId::Default);
 		shader->Begin(rc);
+		shader->Draw(rc, gaugeback);
 		shader->Draw(rc, gauge);
 		shader->End(rc);
-
-		RenderEnemyGauge(dc, rc.view, rc.projection);
-
 	}
 
 	// 2DデバッグGUI描画
@@ -228,7 +230,7 @@ void SceneGame::Render()
 		//stagemanager.GUI();
 		PlayerManager::Instance().DrawDebugGUI();
 		//cameraController_->DrawDebugGUI();
-		//EnemyManager::Instance().DrawDebugGUI();
+		EnemyManager::Instance().DrawDebugGUI();
 		DrawDebugGui();
 		
 		directional_light->DrawDebugGUI();
@@ -237,7 +239,7 @@ void SceneGame::Render()
 
 void SceneGame::DrawDebugGui()
 {
-
+	EnemyManager::Instance().DrawDebugGUI();
 	ImGui::SetNextWindowPos(ImVec2(10, 10), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2(300, 300), ImGuiCond_FirstUseEver);
 
@@ -281,6 +283,7 @@ void SceneGame::DrawDebugGui()
 
 }
 
+<<<<<<< HEAD
 void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
 {
 	//ビューポート
@@ -404,66 +407,31 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT
 	}
 }
 
+=======
+>>>>>>> c88a600ea2d5ddc88bdc1217155ce2472897c0fe
 void SceneGame::RenderEnemyGaugeUpdate()
 {
-	ID3D11DeviceContext* dc = Graphics::Instance().GetDeviceContext();
-
-	Camera& camera = Camera::instance();
-	DirectX::XMFLOAT4X4 view = camera.GetView();
-	DirectX::XMFLOAT4X4 projection = camera.GetProjection();
-
-	//ビューポート
-	D3D11_VIEWPORT viewport;
-	UINT numViewports = 1;
-	dc->RSGetViewports(&numViewports, &viewport);
-
-	//変換行列
-	DirectX::XMMATRIX View = DirectX::XMLoadFloat4x4(&view);
-	DirectX::XMMATRIX Projection = DirectX::XMLoadFloat4x4(&projection);
-	DirectX::XMMATRIX World = DirectX::XMMatrixIdentity();
-	//全てのエネミーの頭上にHPゲージを表示
+	//全てのエネミーのHPゲージを表示
 	EnemyManager& enemyManager = EnemyManager::Instance();
 	int enemyCount = enemyManager.GetEnemyCount();
 	for (int i = 0; i < enemyCount; ++i)
 	{
 		Enemy* enemy = EnemyManager::Instance().GetEnemy(i);
-		//エネミーの頭上のワールド座標
-		DirectX::XMFLOAT3 worldPosition = enemy->GetPosition();
-		worldPosition.y += enemy->GetHeight();
-		DirectX::XMVECTOR WorldPosition = DirectX::XMLoadFloat3(&worldPosition);
-
-		//ワールド座標からスクリーン座標へ変換
-		DirectX::XMVECTOR ScreeenPosition = DirectX::XMVector3Project(
-			WorldPosition,
-			viewport.TopLeftX,
-			viewport.TopLeftY,
-			viewport.Width,
-			viewport.Height,
-			viewport.MinDepth,
-			viewport.MaxDepth,
-			Projection,
-			View,
-			World);
-
-		//スクリーン座標
-		DirectX::XMFLOAT2 screenPosition;
-		DirectX::XMStoreFloat2(&screenPosition, ScreeenPosition);
-
-		const float gaugeWidth = 30.0f;
-		const float gaugeHeight = 5.0f;
-
+		
 		float healthRate = enemy->GetHealth() / static_cast<float>(enemy->GetMaxHealth());
-
 		//ゲージ描画
 		gauge->Update(
-			screenPosition.x - gaugeWidth * 0.5f,
-			screenPosition.y - gaugeHeight,
-			gaugeWidth * healthRate,
-			gaugeHeight,
-			0, 0,
-			static_cast<float>(gauge->GetTextureWidth()),
-			static_cast<float>(gauge->GetTextureHeight()),
-			0.0f,
-			1.0f, 0.0f, 0.0f, 1.0f);
+			340, 50, 766 * healthRate, 34 ,
+			0, 0, gauge->GetTextureWidth()*healthRate, gauge->GetTextureHeight(),
+			0,
+			1, 0, 0, 1
+		);
+		//ゲージ描画
+		gaugeback->Update(
+			334, 48, 774, 38,
+			0, 0, gaugeback->GetTextureWidth(), gaugeback->GetTextureHeight(),
+			0,
+			1, 1, 1, 1
+		);
 	}
 }
