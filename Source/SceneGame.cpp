@@ -19,6 +19,7 @@
 using namespace Debugparam;
 static DirectX::XMFLOAT2 Spritecenter{};
 
+
 void SceneGame::Initialize()
 {
 	//ステージ初期化
@@ -33,16 +34,17 @@ void SceneGame::Initialize()
 	stageMain = new StageMain();
 	stagemanager.Register(stageMain);
 	cameraController_ = new CameraController;
+
 	EnemyManager& enemyManager = EnemyManager::Instance();
-	for (int i = 0; i < 1; ++i)
-	{
+	//for (int i = 0; i < 1; ++i)
+	//{
 
-		/*EnemySlime* slime = new EnemySlime;
-		slime->SetPosition(DirectX::XMFLOAT3(i * 2.0f, 0, 5));
-		slime->SetTerritory(slime->GetPosition(), 10.0f);
-		enemyManager.Register(slime);*/
+	//	/*EnemySlime* slime = new EnemySlime;
+	//	slime->SetPosition(DirectX::XMFLOAT3(i * 2.0f, 0, 5));
+	//	slime->SetTerritory(slime->GetPosition(), 10.0f);
+	//	enemyManager.Register(slime);*/
 
-	}
+	//}
 	EnemyBoss* boss = new EnemyBoss;
 	boss->SetPosition(DirectX::XMFLOAT3(0.0f, 0, 15));
 	boss->SetAngle(DirectX::XMFLOAT3(0.0f, 9.5f, 0.0f));
@@ -223,7 +225,7 @@ void SceneGame::Render()
 
 	// 2DデバッグGUI描画
 	{
-		stagemanager.GUI();
+		//stagemanager.GUI();
 		PlayerManager::Instance().DrawDebugGUI();
 		//cameraController_->DrawDebugGUI();
 		//EnemyManager::Instance().DrawDebugGUI();
@@ -384,21 +386,21 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT
 		//レイキャスト
 		HitResult hit;
 
-		if (stageMain->RayCast(rayStart, Layend, hit))
-		{
-			//////敵を配置
-			//Enemy* slime = new EnemySlime();
-			//slime->SetPosition(hit.position);
-			//EnemyManager::Instance().Register(slime);
+		//if (stageMain->RayCast(rayStart, Layend, hit))
+		//{
+		//	//////敵を配置
+		//	//Enemy* slime = new EnemySlime();
+		//	//slime->SetPosition(hit.position);
+		//	//EnemyManager::Instance().Register(slime);
 
-			/*EnemyManager& enemy = EnemyManager::Instance();
-			int count = enemy.GetEnemyCount();
-			for (int i = 0; i < count; i++)
-			{
+		//	/*EnemyManager& enemy = EnemyManager::Instance();
+		//	int count = enemy.GetEnemyCount();
+		//	for (int i = 0; i < count; i++)
+		//	{
 
-				 enemy.GetEnemy(i)->Destroy();
-			}*/
-		}
+		//		 enemy.GetEnemy(i)->Destroy();
+		//	}*/
+		//}
 	}
 }
 

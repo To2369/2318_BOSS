@@ -66,6 +66,9 @@ void StageManager::GUI()
     if (ImGui::Begin("StageTransform", nullptr, ImGuiWindowFlags_None))
     {
         Stage* stmain1 = stages.at(0);
+        //DirectX::XMFLOAT3 STposition = stmain1->GetPosition();
+
+    //ImGui::InputFloat3 ("stagePosition", &STposition.x);
        
         static DirectX::XMFLOAT3 m1 = { 0.072f,0.01f,0.05f };
 

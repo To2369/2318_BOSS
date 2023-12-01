@@ -30,6 +30,7 @@ protected:
     };
 public:
     DirectX::XMFLOAT3 GetScale() { return scale; }
+    //DirectX::XMFLOAT3 GetPosition() { return position; }
 public:
     void SetScale(DirectX::XMFLOAT3 scale_) { scale = scale_; }
 };

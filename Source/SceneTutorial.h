@@ -1,13 +1,12 @@
 #pragma once
-
 #include "Graphics/Sprite.h"
 #include"scnen.h"
 
-class ScnenTitle :public Scene
+class SceneTutorial :public Scene
 {
 public:
-    ScnenTitle() {};
-    ~ScnenTitle() override{};
+	SceneTutorial() {};
+	~SceneTutorial()override {};
 
     //èâä˙âª
     void Initialize()override;
@@ -19,11 +18,4 @@ public:
     void Render()override;
 private:
     Sprite* sprite = nullptr;
-    Sprite* title = nullptr;
-    Sprite* start = nullptr;
-    Sprite* tutorial = nullptr;
-    Sprite* exit = nullptr;
-    float timer ;
-
-    DirectX::XMFLOAT2 mousePosition;
 };

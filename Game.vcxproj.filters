@@ -150,6 +150,7 @@
     <ClCompile Include="Source\SceneClear.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="Source\SceneTutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\mathf.h" />
@@ -324,6 +325,9 @@
       <Filter>Source\ヘッダー</Filter>
     </ClInclude>
     <ClInclude Include="Source\SceneClear.h">
+      <Filter>Source\ヘッダー</Filter>
+    </ClInclude>
+    <ClInclude Include="Source\SceneTutorial.h">
       <Filter>Source\ヘッダー</Filter>
     </ClInclude>
   </ItemGroup>

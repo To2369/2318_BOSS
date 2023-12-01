@@ -13,6 +13,8 @@ public:
     void Render(RenderContext& rc, ModelShader* shader);
     //レイキャスト
     bool RayCast(const DirectX::XMFLOAT3& start, const DirectX::XMFLOAT3& end, HitResult& Hit)override;
+
+    //DirectX::XMFLOAT3 GetPosition() { return position; }
    
 private:
     Model* model = nullptr;

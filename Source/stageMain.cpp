@@ -4,6 +4,9 @@ StageMain::StageMain()
 {
     //ステージモデル読み込み
     model = new Model("Data/Model/ExampleStage/Stage.mdl");
+    scale.x = 0.072f;
+    scale.y = 0.01f;
+    scale.z = 0.05f;
 }
 StageMain::~StageMain()
 {

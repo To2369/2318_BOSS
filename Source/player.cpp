@@ -87,14 +87,14 @@ void player::Update(float elapsedTime, CameraController cameraCotrol,FierdBuff&F
     model->UpdateAnimation(elapsedTime);
     if (!model->IsPlayerAnimetion())
     {
-
+        if (DeathFlag == true)
+        {
+            SceneManager::Instance().ChangeScene(new SceneOver);
+        }
     }
     //モデル行列更新
     model->UpdateTransform(transform);
-    if (DeathFlag == true)
-    {
-        SceneManager::Instance().ChangeScene(new SceneOver);
-    }
+    
 }
 
 void player::TransitionIdleState()

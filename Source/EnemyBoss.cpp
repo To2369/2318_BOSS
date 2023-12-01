@@ -70,9 +70,12 @@ void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
     //モデル行列更新
     model->UpdateTransform(transform);
 
-    if (DeathFlag == true)
+    if (!model->IsPlayerAnimetion())
     {
-        SceneManager::Instance().ChangeScene(new SceneClear);
+        if (DeathFlag == true)
+        {
+            SceneManager::Instance().ChangeScene(new SceneClear);
+        }
     }
 }
 
