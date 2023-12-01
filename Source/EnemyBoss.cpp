@@ -15,7 +15,8 @@ EnemyBoss::EnemyBoss()
     //円柱の幅高さ設定
     radius = 1.0f;
     height = 1.0f;
-    health = 30000;
+    maxHealth = 30000;
+    health = maxHealth;
     TransitionFirstAction();
     srand((unsigned int)time(NULL));
     DeathFlag = false;
@@ -77,9 +78,11 @@ void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
     //モデル行列更新
     model->UpdateTransform(transform);
 
+    GamePad& gamePad = Input::Instance().GetGamePad();
+    const GamePadButton anyButton = GamePad::BTN_A | GamePad::BTN_B;
     if (DeathFlag == true)
     {
-        //SceneManager::Instance().ChangeScene(new SceneClear);
+        SceneManager::Instance().ChangeScene(new SceneClear);
     }
 }
 
