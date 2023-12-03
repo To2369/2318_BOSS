@@ -349,15 +349,15 @@ bool Character::ApplyDamage(int damage, float invincibleTime)
 {
 
     if (damage == 0)return false;
-    if (healt <= 0)return false;
+    if (health <= 0)return false;
 
     if (invincibleTime_ > 0.0f)return false;
     invincibleTime_ = invincibleTime;
-    healt -= damage;
+    health -= damage;
 
 
 
-    if (healt <= 0)//Ž€–S’Ê’m
+    if (health <= 0)//Ž€–S’Ê’m
     {
         OnDead();
     }
