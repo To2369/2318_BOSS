@@ -68,6 +68,9 @@ void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
     //速力更新処理
     //UpdateVelocity(elapsedTime);
 
+    CollisionNodeVsPlayer0("Chest");
+
+    CollisionNodeVsPlayer1("Head");
     //無敵時間更新
     UpdateInvincibletime(elapsedTime);
 
@@ -104,56 +107,34 @@ void EnemyBoss::DrawDebugPrimitive()
 
 
 //ノードとプレイヤーの衝突判定
-void EnemyBoss::CollisionNodeVsPlayer(const char* nodename, float boneRadius)
+void EnemyBoss::CollisionNodeVsPlayer0(const char* nodename)
 {
     //ノードの位置と当たり判定を行う
     Model::Node* node = model->FindNode(nodename);
     if (node != nullptr)
     {
         //ノードのワールド座標
-        DirectX::XMFLOAT3 nodePosition(
+        nodepos0 = {
             node->worldTransform._41,
             node->worldTransform._42,
             node->worldTransform._43
-        );
+        };
+    }
+}
 
-        //当たり判定表示
-        Graphics::Instance().GetDebugRenderer()->DrawSphere(nodePosition, boneRadius, DirectX::XMFLOAT4(0, 0, 1, 1));
-
-        //プレイヤーと当たり判定
-        player& player = *PlayerManager::Instance().GetPlayer(0);
-        DirectX::XMFLOAT3 outPosition;
-        if (Collision::IntersectSphereVsCylinder(
-            nodePosition,
-            boneRadius,
-            player.GetPosition(),
-            player.getRadius(),
-            player.GetHeight(),
-            outPosition
-        ))
-        {
-            //ダメージを与える
-            if (player.ApplyDamage(1, 0.5f))
-            {
-                //敵を吹っ飛ばすベクトルを算出
-                DirectX::XMFLOAT3 vec;
-                vec.x = outPosition.x - nodePosition.x;
-                vec.z = outPosition.z - nodePosition.z;
-                float length = sqrtf(vec.x * vec.x + vec.z * vec.z);
-                vec.x /= length;
-                vec.z /= length;
-
-                //ｘZ平面に吹っ飛ばす力をかける
-                float power = 10.0f;
-                vec.x *= power;
-                vec.z *= power;
-                //Y方向にも力をかける
-                vec.y = 5;
-
-                //吹っ飛ばす
-                player.AddImpulse(vec);
-            }
-        }
+void EnemyBoss::CollisionNodeVsPlayer1(const char* nodename)
+{
+    //ノードの位置と当たり判定を行う
+    Model::Node* node = model->FindNode(nodename);
+    if (node != nullptr)
+    {
+        //ノードのワールド座標
+        nodepos1= {
+            node->worldTransform._41,
+            node->worldTransform._42,
+            node->worldTransform._43
+        };
+        Graphics::Instance().GetDebugRenderer()->DrawSphere(nodepos1, 10, DirectX::XMFLOAT4(0, 0, 1, 1));
     }
 }
 
@@ -202,7 +183,7 @@ void EnemyBoss::UpdateFirstActionState(float elapsedTime)
 void EnemyBoss::TransitionIdleState()
 {
     state = State::Idle;
-    stateTime = Mathf::RandameRange2(IdleStateTimer.x, IdleStateTimer.y);
+    stateTime = IdleStateTimer;
     model->playAnimetion(Anim_Idle1, true);
 }
 
@@ -315,7 +296,7 @@ void EnemyBoss::TransitionBattleIdleState()
     state = State::Idle_Battle;
     RandomState = (int)Mathf::RandameRange(0.0f, 3.0f);
     RandomPanelState = RandomState;
-    stateTime = Mathf::RandameRange2(AttackIdleStateTimer.x, AttackIdleStateTimer.y);
+    stateTime = AttackIdleStateTimer;
     model->playAnimetion(Anim_Idle2, true);
 }
 
