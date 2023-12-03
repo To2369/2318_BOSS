@@ -7,7 +7,7 @@ TargetPoint::TargetPoint()
 {
     model = new Model("Data/Model/Mato/Mato.mdl");
     //モデルが大きいのでスケーリング
-    scale.x = scale.y = scale.z = 0.01f;
+    scale.x = scale.y = scale.z = 0.08f;
     //円柱の幅高さ設定
     radius = 0.0f;
     height = 0.0f;
