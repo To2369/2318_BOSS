@@ -15,6 +15,8 @@
 #include"parameter.h"
 #include"SceneManager.h"
 #include"SceneTitle.h"
+
+#include"TargetPoint.h"
 // ‰Šú‰»
 using namespace Debugparam;
 static DirectX::XMFLOAT2 Spritecenter{};
@@ -43,10 +45,14 @@ void SceneGame::Initialize()
 		enemyManager.Register(slime);*/
 
 	}
-	EnemyBoss* boss = new EnemyBoss;
+	boss = new EnemyBoss;
 	boss->SetPosition(DirectX::XMFLOAT3(0.0f, -5.0f, 30.0f));
 	boss->SetAngle(DirectX::XMFLOAT3(0.0f, 9.5f, 0.0f));
 	enemyManager.Register(boss);
+	TargetPoint_0 = new TargetPoint;
+	enemyManager.Register(TargetPoint_0);
+	TargetPoint_1 = new TargetPoint;
+	enemyManager.Register(TargetPoint_1);
 	//todo:ƒJƒƒ‰‰ŠúÝ’è
 
 	camera.SetLookAt(
@@ -124,6 +130,7 @@ void SceneGame::Update(float elapsedTime)
 	PlayerManager::Instance().Update(elapsedTime, *cameraController_,*FB);
 	
 	FB->Update(elapsedTime);
+	
 	EnemyManager::Instance().Update(elapsedTime,*FB);
 	EffectManager::Instance().Update(elapsedTime);
 
@@ -143,6 +150,8 @@ void SceneGame::Update(float elapsedTime)
 			textureWidth, textureHeght, 0,
 			1, 1, 1, 1);
 	}
+	TargetPoint_0->SetPosition(boss->Getnodepos0());
+	TargetPoint_1->SetPosition(boss->Getnodepos1());
 	GamePad& gamePad = Input::Instance().GetGamePad();
 	const GamePadButton anyButton = GamePad::BTN_A | GamePad::BTN_B;
 	if (gamePad.GetButtonDown() & anyButton)

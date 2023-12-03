@@ -9,7 +9,8 @@
 #include"StageManager.h"
 #include"FierdBuff.h"
 #include "Graphics/Light.h"
-
+#include"TargetPoint.h"
+#include"EnemyBoss.h"
 // ゲームシーン
 class SceneGame :public Scene
 {
@@ -42,7 +43,9 @@ private:
 	Sprite* gauge = nullptr;
 	Sprite* gaugeback = nullptr;
 	player* player_ = nullptr;
-
+	TargetPoint* TargetPoint_0 = nullptr;
+	TargetPoint* TargetPoint_1 = nullptr;
+	EnemyBoss* boss = nullptr;
 private://追加しもの
 	Graphics& graphics = Graphics::Instance();
 	Camera& camera = Camera::instance();
@@ -50,6 +53,8 @@ private://追加しもの
 	std::unique_ptr<Sprite>circle = std::make_unique<Sprite>("Data/Sprite/サークル.png");
 	StageManager& stagemanager = StageManager::Instance();
 	std::unique_ptr<FierdBuff>FB;//フィールドバフ
+	DirectX::XMFLOAT3 targetpos = { 0,0,0 };
+	DirectX::XMFLOAT3 targetpos2 = { 0,0,0 };
 	//平行光源データ
 	std::unique_ptr<Light> directional_light; //平行光源
 	DirectX::XMFLOAT4 ambientLightColor; //環境光色
