@@ -5,7 +5,6 @@
 class SceneLoading :public Scene
 {
 public:
-
     SceneLoading(Scene* nextscene) :nextscene(nextscene) {}
     SceneLoading(){}
     ~SceneLoading()override {};
@@ -27,5 +26,9 @@ private:
     //次のシーンを作成してくれるスレッド
     std::thread* thread = nullptr;
     Sprite* sprite = nullptr;
+    Sprite* ex = nullptr;
+    bool exflag = false;
     float    angle = 0.0f;
+    float positionX = -100;
+    float positionY = 500;
 };

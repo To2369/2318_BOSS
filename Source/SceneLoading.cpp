@@ -7,7 +7,8 @@
 void SceneLoading::Initialize()
 {
     //スプライト初期化
-    sprite = new Sprite("Data/Sprite/LoadingIcon.png");
+    ex = new Sprite("Data/Sprite/ex.png");
+    sprite = new Sprite("Data/Sprite/arrow.png");
     thread = new std::thread(LadingThread,this);
 }
 
@@ -24,6 +25,12 @@ void SceneLoading::Finalize()
     {
         delete sprite;
         sprite = nullptr;
+    }
+
+    if (ex != nullptr)
+    {
+        delete ex;
+        ex = nullptr;
     }
 }
 
@@ -42,14 +49,37 @@ void SceneLoading::Update(float elapsedTime)
     float screenHeight = static_cast<float>(Graphics::Instance().GetScreenHeight());
     float textureWidth = static_cast<float>(sprite->GetTextureWidth());
     float textureHeight = static_cast<float>(sprite->GetTextureHeight());
-    float positionX = screenWidth - textureWidth;
-    float positionY = screenHeight - textureHeight;
-
+    positionX += 15;
+    if (positionX > 980)
+    {
+        positionX = -100;
+        exflag = true;
+    }
+    if (positionX > 100)
+    {
+        exflag = false;
+    }
     sprite->Update(
-        positionX, positionY, textureWidth, textureHeight,
+        positionX, positionY, 224, 224,
         0, 0, textureWidth, textureHeight,
-        angle,
+        0,
         1, 1, 1, 1);
+    if (exflag)
+    {
+        ex->Update(
+            1000, positionY, 224, 224,
+            0, 0, 640, 640,
+            0,
+            1, 1, 1, 1);
+    }
+    else
+    {
+        ex->Update(
+            1000, positionY, 224, 224,
+            0, 0, 640, 640,
+            0,
+            1, 1, 1, 0);
+    }
 }
 
 void SceneLoading::Render()
@@ -59,7 +89,7 @@ void SceneLoading::Render()
     ID3D11RenderTargetView* rtv = graphics.GetRenderTargetView();
     ID3D11DepthStencilView* dsv = graphics.GetDepthStencilView();
     //画面クリア＆レンダーターゲット設定
-    FLOAT color[] = { 0.0f,0.0f,0.5f,1.0f };
+    FLOAT color[] = { 1.0f,1.0f,1.0f,1.0f };
     dc->ClearRenderTargetView(rtv, color);
     dc->ClearDepthStencilView(dsv, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     dc->OMSetRenderTargets(1, &rtv, dsv);
@@ -71,6 +101,7 @@ void SceneLoading::Render()
         SpriteShader* shader = graphics.GetShader(SpriteShaderId::Default);
         shader->Begin(rc);
         shader->Draw(rc, sprite);
+        shader->Draw(rc, ex);
         shader->End(rc);
     }
 }
