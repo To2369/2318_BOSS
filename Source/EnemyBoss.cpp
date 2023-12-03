@@ -135,7 +135,6 @@ void EnemyBoss::CollisionNodeVsPlayer1(const char* nodename)
             node->worldTransform._42,
             node->worldTransform._43
         };
-        Graphics::Instance().GetDebugRenderer()->DrawSphere(nodepos1, 10, DirectX::XMFLOAT4(0, 0, 1, 1));
     }
 }
 
