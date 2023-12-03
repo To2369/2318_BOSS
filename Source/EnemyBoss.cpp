@@ -71,6 +71,7 @@ void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
     CollisionNodeVsPlayer0("Chest");
 
     CollisionNodeVsPlayer1("Head");
+
     //無敵時間更新
     UpdateInvincibletime(elapsedTime);
 
@@ -85,7 +86,7 @@ void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
     const GamePadButton anyButton = GamePad::BTN_A | GamePad::BTN_B;
     if (DeathFlag == true)
     {
-        SceneManager::Instance().ChangeScene(new SceneClear);
+        //SceneManager::Instance().ChangeScene(new SceneClear);
     }
 }
 
@@ -140,12 +141,11 @@ void EnemyBoss::CollisionNodeVsPlayer1(const char* nodename)
 
 void EnemyBoss::DamageFieldVsPlayer(FierdBuff& FB)
 {
-
+    FB.FierdAttackEffect();
     //プレイヤーと当たり判定
     player& player = *PlayerManager::Instance().GetPlayer(0);
     if (player.GetDamageZone() == 10)
     {
-        FB.FierdAttackEffect();
         player.ApplyDamage(Damage, InvicivleTimer);
     }
 }
@@ -160,7 +160,6 @@ void EnemyBoss::OnDamege()
 void EnemyBoss::OnDead()
 {
     TransitionDeathState();
-    model->playAnimetion(Anim_Idle1, true);
 }
 
 //一番最初の行動遷移(一度しか使わない)
@@ -357,7 +356,7 @@ void EnemyBoss::UpdateDamegeState(float elapsedTime)
 {
     if (!model->IsPlayerAnimetion())
     {
-        //TransitionBattleIdleState();
+        TransitionBattleIdleState();
     }
 }
 
