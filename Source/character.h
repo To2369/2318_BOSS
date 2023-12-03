@@ -23,6 +23,8 @@ public:
     //Å‘åŒ’Nó‘Ôæ“¾
     int GetMaxHealth()const { return maxHealth; };
     float GetTimer() { return stateTime; }
+    DirectX::XMFLOAT3 Getnodepos0() { return nodepos0; }
+    DirectX::XMFLOAT3 Getnodepos1() { return nodepos1; }
 private:
     //‚’¼‘¬—ÍXVˆ—
     void UpdateVerticalVelocity(float elpsedFrame);
@@ -52,6 +54,8 @@ protected:
     int   health = 5;
     int   maxHealth = 5;
     Model* model = nullptr;
+    DirectX::XMFLOAT3 nodepos0 = { 0,0,0 };
+    DirectX::XMFLOAT3 nodepos1 = { 0,0,0 };
     DirectX::XMFLOAT3   velocity = { 0,0,0 };
     DirectX::XMFLOAT3   position = { 0,0,0 };
     DirectX::XMFLOAT3   angle = { 0,0,0 };
