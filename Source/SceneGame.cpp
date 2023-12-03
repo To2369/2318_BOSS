@@ -96,6 +96,7 @@ void SceneGame::Finalize()
 	StageManager::Instance().Clear();
 	PlayerManager::Instance().clear();
 }
+
 void SceneGame::changeCamera(DirectX::XMFLOAT3& target, bool Switch)
 {
 	PlayerManager& pl_m = PlayerManager::Instance();
@@ -294,25 +295,21 @@ void SceneGame::RenderEnemyGaugeUpdate()
 {
 	//‘S‚Ä‚ÌƒGƒlƒ~[‚ÌHPƒQ[ƒW‚ğ•\¦
 	EnemyManager& enemyManager = EnemyManager::Instance();
-	int enemyCount = enemyManager.GetEnemyCount();
-	for (int i = 0; i < enemyCount; ++i)
-	{
-		Enemy* enemy = EnemyManager::Instance().GetEnemy(i);
-		
-		float healthRate = enemy->GetHealth() / static_cast<float>(enemy->GetMaxHealth());
-		//ƒQ[ƒW•`‰æ
-		gauge->Update(
-			340, 50, 766 * healthRate, 34 ,
-			0, 0, gauge->GetTextureWidth()*healthRate, gauge->GetTextureHeight(),
-			0,
-			1, 0, 0, 1
-		);
-		//ƒQ[ƒW•`‰æ
-		gaugeback->Update(
-			334, 48, 774, 38,
-			0, 0, gaugeback->GetTextureWidth(), gaugeback->GetTextureHeight(),
-			0,
-			1, 1, 1, 1
-		);
-	}
+	Enemy* enemy = EnemyManager::Instance().GetEnemy(0);
+
+	float healthRate = enemy->GetHealth() / static_cast<float>(enemy->GetMaxHealth());
+	//ƒQ[ƒW•`‰æ
+	gauge->Update(
+		340, 50, 766 * healthRate, 34,
+		0, 0, gauge->GetTextureWidth() * healthRate, gauge->GetTextureHeight(),
+		0,
+		1, 0, 0, 1
+	);
+	//ƒQ[ƒW•`‰æ
+	gaugeback->Update(
+		334, 48, 774, 38,
+		0, 0, gaugeback->GetTextureWidth(), gaugeback->GetTextureHeight(),
+		0,
+		1, 1, 1, 1
+	);
 }
