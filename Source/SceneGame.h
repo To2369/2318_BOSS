@@ -1,9 +1,8 @@
 #pragma once
-
+#include"Graphics/Sprite.h"
 #include"CameraController.h"
 #include"camera.h"
 #include"scnen.h"
-#include"Graphics/Sprite.h"
 #include"player.h"
 #include"stageMain.h"
 #include"StageManager.h"
@@ -32,6 +31,7 @@ public:
 public:
 	void changeCamera(DirectX::XMFLOAT3& target, bool Switch);
 
+	void RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection);
 
 private:
 
@@ -53,4 +53,5 @@ private://追加しもの
 	//平行光源データ
 	std::unique_ptr<Light> directional_light; //平行光源
 	DirectX::XMFLOAT4 ambientLightColor; //環境光色
+
 };

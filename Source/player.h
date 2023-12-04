@@ -132,8 +132,6 @@ public:
             ma.clear();
         }
     }//マテリアルの数値をリセット
-
-    bool DeathFlag;
 private:
 
 
@@ -575,4 +573,5 @@ private:
     DirectX::XMFLOAT2 randomPos;
     int magnification_P=0;
     int DamageZone = 0;
+    bool DeathFlag;
 };

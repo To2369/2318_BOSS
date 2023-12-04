@@ -18,4 +18,6 @@ public:
     void Render()override;
 private:
     Sprite* sprite = nullptr;
+
+    DirectX::XMFLOAT2 mousePosition;
 };

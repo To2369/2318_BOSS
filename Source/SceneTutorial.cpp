@@ -9,7 +9,7 @@
 void SceneTutorial::Initialize()
 {
     //スプライトの初期化
-    sprite = new Sprite("Data/Sprite/GameOver.jpg");
+    sprite = new Sprite("Data/Sprite/SCENE_TUTORIAL.png");
 }
 
 void SceneTutorial::Finalize()
@@ -23,9 +23,11 @@ void SceneTutorial::Finalize()
 
 void SceneTutorial::Update(float elpsedTime)
 {
-    GamePad& gamePad = Input::Instance().GetGamePad();
-    const GamePadButton anyButton = GamePad::BTN_A | GamePad::BTN_B;
-    if (gamePad.GetButtonDown() & anyButton)
+    Mouse& mouse = Input::Instance().GetMouse();
+    mousePosition.x = static_cast<float>(mouse.GetPositionX());
+    mousePosition.y = static_cast<float>(mouse.GetPositionY());
+
+    if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
     {
         SceneManager::Instance().ChangeScene(new ScnenTitle);
     }

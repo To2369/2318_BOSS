@@ -10,7 +10,7 @@
 void SceneClear::Initialize()
 {
     //スプライトの初期化
-    sprite = new Sprite("Data/Sprite/GameClear.jpg");
+    sprite = new Sprite("Data/Sprite/VICTORY.png");
     exit = new Sprite("Data/Sprite/EXIT.png");
     title = new Sprite("Data/Sprite/TITLE_.png");
 }
@@ -59,7 +59,7 @@ void SceneClear::Update(float elpsedTime)
     
 
     sprite->Update(
-        0, 0, screenWidth, screenHeight,
+        500, 0, screenWidth/2, screenHeight/2,
         0, 0, textureWidth, textureHeght,
         0,
         1, 1, 1, 1);

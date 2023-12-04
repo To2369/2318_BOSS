@@ -60,7 +60,7 @@ void ScnenTitle::Update(float elpsedTime)
     float titleHeght = static_cast<float>(title->GetTextureHeight());
 
     title->Update(
-        50, 40, titleWidth * 2.5, titleHeght * 2.5,
+        50, 40, titleWidth * 2, titleHeght * 2,
         0, 0, titleWidth, titleHeght,
         0,
         1, 1, 1, 1);
@@ -72,20 +72,20 @@ void ScnenTitle::Update(float elpsedTime)
     int state = 0;
 
     start->Update(
-        1550, 640, 360, 130,
+        positionX - 10, positionY - 200, 242, 92,
         0, 0, 242, 92,
         0,
         1, 1, 1, 1);
 
     tutorial->Update(
-        1550, 781, 360, 130,
+        positionX - 10, positionY -106, 242, 92,
         0, 0, 242, 92,
         0,
         1, 1, 1, 1);
 
 
     exit->Update(
-        1550, 931, 360, 130,
+        positionX-10, positionY-10, 242, 92,
         0, 0, 242, 92,
         0,
         1, 1, 1, 1);
@@ -94,17 +94,17 @@ void ScnenTitle::Update(float elpsedTime)
         mousePosition.y = static_cast<float>(mouse.GetPositionY());
     if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
     {
-        if (mousePosition.x > 1550)
+        if (mousePosition.x > positionX - 10)
         {
-            if (  mousePosition.y < 770 & mousePosition.y > 640)
+            if (  mousePosition.y < positionY - 110 & mousePosition.y > positionY - 200)
             {
                 SceneManager::Instance().ChangeScene(new SceneLoading (new SceneGame));
             }
-            if (mousePosition.y > 781 & mousePosition.y < 910)
+            if (mousePosition.y > positionY - 106 & mousePosition.y < positionY - 20)
             {
                 SceneManager::Instance().ChangeScene(new SceneTutorial);
             }
-            if (mousePosition.y > 921)
+            if (mousePosition.y > positionY - 10)
             {
                 PostQuitMessage(0);
             }

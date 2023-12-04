@@ -6,6 +6,7 @@
 #include"PlayerManager.h"
 #include"SceneManager.h"
 #include"SceneClear.h"
+
 //コンストラクタ
 EnemyBoss::EnemyBoss()
 {
@@ -72,10 +73,7 @@ void EnemyBoss::Update(float elapsedTime, FierdBuff& FB)
 
     if (!model->IsPlayerAnimetion())
     {
-        if (DeathFlag == true)
-        {
-            SceneManager::Instance().ChangeScene(new SceneClear);
-        }
+        DeathFlag = true;
     }
 }
 
@@ -359,6 +357,5 @@ void EnemyBoss::UpdateDeathState(float elapsedTime)
     if (!model->IsPlayerAnimetion())
     {
         Destroy();
-        DeathFlag = true;
     }
 }

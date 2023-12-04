@@ -15,6 +15,8 @@
 #include"parameter.h"
 #include"SceneManager.h"
 #include"SceneTitle.h"
+#include"SceneClear.h"
+#include"SceneOver.h"
 // 初期化
 using namespace Debugparam;
 static DirectX::XMFLOAT2 Spritecenter{};
@@ -23,7 +25,6 @@ static DirectX::XMFLOAT2 Spritecenter{};
 void SceneGame::Initialize()
 {
 	//ステージ初期化
-
 
 	FB = std::make_unique<FierdBuff>();
 	player* pl = new player;
@@ -145,12 +146,7 @@ void SceneGame::Update(float elapsedTime)
 			textureWidth, textureHeght, 0,
 			1, 1, 1, 1);
 	}
-	GamePad& gamePad = Input::Instance().GetGamePad();
-	const GamePadButton anyButton = GamePad::BTN_A | GamePad::BTN_B;
-	if (gamePad.GetButtonDown() & anyButton)
-	{
-		//SceneManager::Instance().ChangeScene(new ScnenTitle);
-	}
+	
 }
 
 // 描画処理
@@ -283,7 +279,7 @@ void SceneGame::DrawDebugGui()
 
 }
 
-<<<<<<< HEAD
+
 void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT4X4& view, const DirectX::XMFLOAT4X4& projection)
 {
 	//ビューポート
@@ -407,8 +403,7 @@ void SceneGame::RenderEnemyGauge(ID3D11DeviceContext* dc, const DirectX::XMFLOAT
 	}
 }
 
-=======
->>>>>>> c88a600ea2d5ddc88bdc1217155ce2472897c0fe
+
 void SceneGame::RenderEnemyGaugeUpdate()
 {
 	//全てのエネミーのHPゲージを表示
