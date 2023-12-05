@@ -71,6 +71,9 @@ void player::Update(float elapsedTime, CameraController cameraCotrol,FierdBuff&F
     case State::Death:
         UpdateDeathState(elapsedTime);
         break;
+    case State::Wait:
+        UpdateWaitState(elapsedTime);
+        break;
     }
     //速力更新処理
     UpdateVelocity(elapsedTime);
@@ -85,13 +88,7 @@ void player::Update(float elapsedTime, CameraController cameraCotrol,FierdBuff&F
    
     //モデルアニメーション更新処理
     model->UpdateAnimation(elapsedTime);
-    if (!model->IsPlayerAnimetion())
-    {
-        if (DeathFlag == true)
-        {
-            SceneManager::Instance().ChangeScene(new SceneOver);
-        }
-    }
+
     //モデル行列更新
     model->UpdateTransform(transform);
     
@@ -117,9 +114,6 @@ void player::UpdateIdleState(float elapsedTime)
 
         TransitionMOveState();
     }
-
-
-
 }
 
 void player::CollisionplayerVsEnemies()
@@ -283,12 +277,24 @@ void player::TransitionDeathState()
 {
     state = State::Death;
     model->playAnimetion(Anim_Death, false);
-    DeathFlag = true;
 }
 
 void player::UpdateDeathState(float elapsedTime)
 {
+    if (!model->IsPlayerAnimetion())
+    {
+        DeathFlag = true;
+    }
+}
 
+void player::TransitionWaitState()
+{
+    state = State::Wait;
+    model->playAnimetion(Anime_Wait, false);
+}
+
+void player::UpdateWaitState(float elapsedTime)
+{
 }
 
 void player::CollisionNodeVsEnemies(const char* nodename, float nodeRadius)

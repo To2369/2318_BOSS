@@ -17,6 +17,8 @@
 #include"SceneTitle.h"
 #include"SceneClear.h"
 #include"SceneOver.h"
+#include"SceneLoading.h"
+
 // 初期化
 using namespace Debugparam;
 static DirectX::XMFLOAT2 Spritecenter{};
@@ -69,6 +71,13 @@ void SceneGame::Initialize()
 
 	directional_light = std::make_unique<Light>(LightType::Directional);
 	ambientLightColor = { 0.2f,0.2f,0.2f,0.2f };
+
+	//スプライトの初期化
+	sprite = new Sprite("Data/Sprite/GAME_OVER.png");
+	exit = new Sprite("Data/Sprite/EXIT.png");
+	title = new Sprite("Data/Sprite/TITLE_.png");
+	retry = new Sprite("Data/Sprite/RETRY.png");
+	Back = new Sprite("Data/Sprite/Brack.jpg");
 }
 
 // 終了化
@@ -88,6 +97,34 @@ void SceneGame::Finalize()
 	{
 		delete gaugeback;
 		gaugeback = nullptr;
+	}
+	if (sprite != nullptr)
+	{
+		delete sprite;
+		sprite = nullptr;
+	}
+
+	if (retry != nullptr)
+	{
+		delete retry;
+		retry = nullptr;
+	}
+
+	if (title != nullptr)
+	{
+		delete title;
+		title = nullptr;
+	}
+
+	if (exit != nullptr)
+	{
+		delete exit;
+		exit = nullptr;
+	}
+	if (Back != nullptr)
+	{
+		delete Back;
+		Back = nullptr;
 	}
 	EnemyManager::Instance().Clear();
 	StageManager::Instance().Clear();
@@ -117,6 +154,74 @@ void SceneGame::changeCamera(DirectX::XMFLOAT3& target, bool Switch)
 // 更新処理
 void SceneGame::Update(float elapsedTime)
 {
+	if (PlayerManager::Instance().GetPlayer(0)->GetPlDeath())
+	{
+		float screenWidth = static_cast<float>(Graphics::Instance().GetScreenWidth());
+		float screenHeight = static_cast <float>(Graphics::Instance().GetScreenHeight());
+		float textureWidth = static_cast<float>(sprite->GetTextureWidth());
+		float textureHeght = static_cast<float>(sprite->GetTextureHeight());
+		float SpriteX = screenWidth - textureWidth;
+		sprite->Update(
+			SpriteX / 2, 100, 800, 170,
+			0, 0, 800, 170,
+			0,
+			1, 1, 1, 1);
+
+		float exitWidth = static_cast<float>(exit->GetTextureWidth());
+		float exitHeght = static_cast<float>(exit->GetTextureHeight());
+		float positionX = screenWidth - exitWidth;
+		float positionY = screenHeight - exitHeght;
+		float backWidth = static_cast<float>(Back->GetTextureWidth());
+
+		Back->Update(
+			0, 0, screenWidth, screenHeight,
+			0, 0, backWidth, screenHeight,
+			0,
+			1, 1, 1, 0.5);
+
+		exit->Update(
+			positionX / 1.2, 470, 242, 92,
+			0, 0, 242, 92,
+			0,
+			1, 1, 1, 1);
+
+		title->Update(
+			positionX / 2, 470, 242, 92,
+			0, 0, 242, 92,
+			0,
+			1, 1, 1, 1);
+		retry->Update(
+			170, 470, 242, 92,
+			0, 0, 242, 92,
+			0,
+			1, 1, 1, 1);
+
+		Mouse& mouse = Input::Instance().GetMouse();
+		mousePosition.x = static_cast<float>(mouse.GetPositionX());
+		mousePosition.y = static_cast<float>(mouse.GetPositionY());
+
+		if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
+		{
+			if (mousePosition.y > 470 & mousePosition.y < 562)
+			{
+				if (mousePosition.x > 170 & mousePosition.x < 412)
+				{
+					SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
+				}
+
+				if (mousePosition.x > positionX / 2 & mousePosition.x < positionX / 2 + 242)
+				{
+					SceneManager::Instance().ChangeScene(new ScnenTitle);
+				}
+
+				if (mousePosition.x > positionX / 1.2 & mousePosition.x < positionX / 1.2 + 242)
+				{
+					PostQuitMessage(0);
+				}
+			}
+		}
+	}
+	if (PlayerManager::Instance().GetPlayer(0)->GetPlDeath()) return;
 	static DirectX::XMFLOAT3 target{};
 	frameRateCheck = elapsedTime;
 	changeCamera(target, PlayerManager::Instance().GetPlayer(0)->GetPerspectiveChangeFlag().TPS);
@@ -146,6 +251,7 @@ void SceneGame::Update(float elapsedTime)
 			textureWidth, textureHeght, 0,
 			1, 1, 1, 1);
 	}
+	
 	
 }
 
@@ -216,20 +322,31 @@ void SceneGame::Render()
 		RenderEnemyGaugeUpdate();
 		SpriteShader* shader = graphics.GetShader(SpriteShaderId::Default);
 		shader->Begin(rc);
-		shader->Draw(rc, gaugeback);
-		shader->Draw(rc, gauge);
+		if (!PlayerManager::Instance().GetPlayer(0)->GetPlDeath())
+		{
+			shader->Draw(rc, gaugeback);
+			shader->Draw(rc, gauge);
+		}
+		if (PlayerManager::Instance().GetPlayer(0)->GetPlDeath())
+		{
+			shader->Draw(rc, Back);
+			shader->Draw(rc, sprite);
+			shader->Draw(rc, title);
+			shader->Draw(rc, exit);
+			shader->Draw(rc, retry);
+		}
 		shader->End(rc);
 	}
 
 	// 2DデバッグGUI描画
 	{
-		//stagemanager.GUI();
-		PlayerManager::Instance().DrawDebugGUI();
-		//cameraController_->DrawDebugGUI();
-		EnemyManager::Instance().DrawDebugGUI();
-		DrawDebugGui();
-		
-		directional_light->DrawDebugGUI();
+		////stagemanager.GUI();
+		//PlayerManager::Instance().DrawDebugGUI();
+		////cameraController_->DrawDebugGUI();
+		//EnemyManager::Instance().DrawDebugGUI();
+		//DrawDebugGui();
+		//
+		//directional_light->DrawDebugGUI();
 	}
 }
 

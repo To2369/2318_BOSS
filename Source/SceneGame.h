@@ -42,6 +42,11 @@ private:
 	Sprite* gauge = nullptr;
 	Sprite* gaugeback = nullptr;
 	player* player_ = nullptr;
+	Sprite* sprite = nullptr;
+	Sprite* exit = nullptr;
+	Sprite* title = nullptr;
+	Sprite* retry = nullptr;
+	Sprite* Back = nullptr;
 
 private://’Ç‰Á‚µ‚à‚Ì
 	Graphics& graphics = Graphics::Instance();
@@ -54,4 +59,5 @@ private://’Ç‰Á‚µ‚à‚Ì
 	std::unique_ptr<Light> directional_light; //•½sŒõŒ¹
 	DirectX::XMFLOAT4 ambientLightColor; //ŠÂ‹«ŒõF
 
+	DirectX::XMFLOAT2 mousePosition;
 };

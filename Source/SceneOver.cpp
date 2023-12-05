@@ -69,18 +69,18 @@ void SceneOver::Update(float elpsedTime)
     float positionY = screenHeight - exitHeght;
 
     exit->Update(
-        1300, 670, 360, 130,
+        positionX / 1.2, 470, 242, 92,
         0, 0, 242, 92,
         0,
         1, 1, 1, 1);
 
     title->Update(
-        780, 670, 360, 130,
+        positionX / 2, 470, 242, 92,
         0, 0, 242, 92,
         0,
         1, 1, 1, 1);
     retry->Update(
-        260, 670, 360, 130,
+        170, 470, 242, 92,
         0, 0, 242, 92,
         0,
         1, 1, 1, 1);
@@ -91,19 +91,19 @@ void SceneOver::Update(float elpsedTime)
 
     if (mouse.GetButtonDown() & Mouse::BTN_LEFT)
     {
-        if (mousePosition.y > 670 & mousePosition.y < 800)
+        if (mousePosition.y > 470 & mousePosition.y < 562)
         {
-            if (mousePosition.x > 260 & mousePosition.x < 620)
+            if (mousePosition.x > 170 & mousePosition.x < 412)
             {
                 SceneManager::Instance().ChangeScene(new SceneLoading(new SceneGame));
             }
 
-            if (mousePosition.x > 780 & mousePosition.x < 1140)
+            if (mousePosition.x > positionX / 2 & mousePosition.x < positionX / 2 + 242)
             {
                 SceneManager::Instance().ChangeScene(new ScnenTitle);
             }
 
-            if (mousePosition.x > 1300 & mousePosition.x < 1630)
+            if (mousePosition.x > positionX / 1.2 & mousePosition.x < positionX / 1.2 + 242)
             {
                 PostQuitMessage(0);
             }

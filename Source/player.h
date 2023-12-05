@@ -44,7 +44,8 @@ private:
         Aime,
         Attack,
         Damege,
-        Death
+        Death,
+        Wait
     };
 public:
    
@@ -123,6 +124,8 @@ public: //Getä÷êî
     float GetProjectileSpeed() { return projectileSpeed; }
     int Getmagnification() {return  magnification_P; }
     int GetDamageZone() { return DamageZone; }
+
+    bool GetPlDeath() { return DeathFlag; }
 public:
     void DebugMaterialClear(bool& flag) {
 
@@ -156,6 +159,8 @@ private:
     void TransitionDeathState();
     void UpdateDeathState(float elapsedTime);
 
+    void TransitionWaitState();
+    void UpdateWaitState(float elapsedTime);
 
 private:
     void RandomParam(int rand_, DirectX::XMFLOAT2& ArrowDirection, float radius, std::string& name);
@@ -169,6 +174,7 @@ private:
         Anim_Attack = 7,
         Anim_Death = 9,
         Anim_GetHit1 = 11,
+        Anime_Wait = 13,
     };
 
 

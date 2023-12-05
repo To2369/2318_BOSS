@@ -102,7 +102,7 @@ void ScnenTitle::Update(float elpsedTime)
             }
             if (mousePosition.y > positionY - 106 & mousePosition.y < positionY - 20)
             {
-                SceneManager::Instance().ChangeScene(new SceneTutorial);
+                SceneManager::Instance().ChangeScene(new SceneClear);
             }
             if (mousePosition.y > positionY - 10)
             {
